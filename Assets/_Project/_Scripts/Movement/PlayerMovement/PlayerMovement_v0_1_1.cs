@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
 
-[RequireComponent(typeof(InputActionReference))]
+//[RequireComponent(typeof(InputActionReference))]
 public class PlayerMovement_v0_1_1 : MonoBehaviour
 {
     [Header("Movement Settings")]

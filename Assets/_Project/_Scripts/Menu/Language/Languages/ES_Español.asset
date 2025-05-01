@@ -9,22 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a6124332706b1649920704e00363b24, type: 3}
-  m_Name: ES_Valencian
+  m_Script: {fileID: 11500000, guid: 63859d9fe77d4a745ba4a27b5fc2cfdf, type: 3}
+  m_Name: "ES_Espa\xF1ol"
   m_EditorClassIdentifier: 
-  displayName: "Valenci\xE0"
+  displayName: "Espa\xF1ol"
   texts:
   - key: 0
-    value: Opcions
+    value: Opciones
   - key: 1
-    value: "Empe\xE7ar"
+    value: Empezar
   - key: 2
-    value: Eixir
+    value: Salir
   - key: 5
-    value: So
+    value: Sonido
   - key: 9
-    value: "Gr\xE0fics"
+    value: "Gr\xE1ficos"
   - key: 11
-    value: Tornar al menu
+    value: Volver al menu
   - key: 10
-    value: Joc
+    value: Juego

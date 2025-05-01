@@ -13,12 +13,16 @@ public class LanguageManager : MonoBehaviour
 
     private void Start()
     {
-        _currentLanguageIndex = PlayerPrefs.GetInt("LanguageIndex", 0); // Carga el último idioma (0 por defecto)
-        SetLanguage(_currentLanguageIndex);
+        
+
     }
 
     private void Awake()
     {
+        _currentLanguageIndex = PlayerPrefs.GetInt("LanguageIndex", 0); // Carga el último idioma (0 por defecto)
+        Debug.Log("<color=green> Hola Hola");
+        SetLanguage(_currentLanguageIndex);
+        Debug.Log("<color=yellow> Ciao ciao");
         // Singleton: Solo una instancia en todo el juego
         if (Instance == null)
         {
@@ -44,12 +48,19 @@ public class LanguageManager : MonoBehaviour
         foreach (var entry in languages[_currentLanguageIndex].texts)
         {
             _textLookup[entry.key] = entry.value;
+            print(entry.key);
+            print(entry.value);
         }
     }
     // Obtiene el texto traducido (ej: "start" → "Empezar")
 
     public string GetText(TextKey key)
     {
+        foreach (var entry in _textLookup.Values)
+        {
+            print(entry);
+        }
+        
         if (_textLookup.TryGetValue(key, out string value))
             return value;
 
