@@ -20,7 +20,8 @@ public class LanguageManager : MonoBehaviour
     private void Awake()
     {
         _currentLanguageIndex = PlayerPrefs.GetInt("LanguageIndex", 0); // Carga el último idioma (0 por defecto)
-        Debug.Log("<color=green> Hola Hola");
+        CustomLogger.Log(this, "Hola Hola");
+        //Debug.Log("Hola Hola");
         SetLanguage(_currentLanguageIndex);
         Debug.Log("<color=yellow> Ciao ciao");
         // Singleton: Solo una instancia en todo el juego

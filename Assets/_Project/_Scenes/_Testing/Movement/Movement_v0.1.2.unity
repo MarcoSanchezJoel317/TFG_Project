@@ -164,7 +164,6 @@ GameObject:
   - component: {fileID: 277735052}
   - component: {fileID: 277735051}
   - component: {fileID: 277735050}
-  - component: {fileID: 277735049}
   - component: {fileID: 277735056}
   m_Layer: 0
   m_Name: Player
@@ -173,19 +172,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &277735049
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 277735048}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 891d39762ed69874ebc4afb216b0d771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_movementInput: {fileID: -6622010300307445888, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
 --- !u!114 &277735050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,7 +200,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 277735056}
-        m_TargetAssemblyTypeName: PlayerMovement_v0_1_1, Assembly-CSharp
+        m_TargetAssemblyTypeName: PlayerMovement_v0_1_2, Assembly-CSharp
         m_MethodName: Jump
         m_Mode: 0
         m_Arguments:
@@ -364,12 +350,62 @@ MonoBehaviour:
   m_GameObject: {fileID: 277735048}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70d90b99bd40e27448a34e79abb15619, type: 3}
+  m_Script: {fileID: 11500000, guid: 5522c6556eb511f43a1fe1e5062da57a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 10
   acceleration: 20
-  deceleration: 15
+  accelerationFactorFromDot:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -1
+      value: 2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  maxAccelerationForce: 150
+  accelerationForceFactorFromDot:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -1
+      value: 2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  forceScale: {x: 1, y: 0, z: 1}
+  gravityScaleDrop: 10
   upForce: 250
   m_movementInput: {fileID: -6622010300307445888, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
 --- !u!1 &349693575
@@ -513,7 +549,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a271d7f783245bf40bc14e89f1881ed1, type: 2}
+  - {fileID: 2100000, guid: afdff59d3b0285749bf06bd13eec4ecd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -631,7 +667,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'v 0.1.1
+  m_text: 'v 0.1.2
+
 
 '
   m_isRightToLeft: 0
@@ -3425,7 +3462,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 2
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -3448,13 +3485,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1894505802}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: 0.33604196, y: 0.56104136, z: 0.39799577, w: 0.6433566}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: -0.813, y: 81.684, z: 62.781}
 --- !u!114 &1894505805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3543,7 +3580,7 @@ Terrain:
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 2100000, guid: 594ea882c5a793440b60ff72d896021e, type: 2}
+  m_MaterialTemplate: {fileID: 2100000, guid: a271d7f783245bf40bc14e89f1881ed1, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
@@ -3565,7 +3602,7 @@ Transform:
   m_GameObject: {fileID: 1922490395}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -100, y: -0.14, z: 19}
+  m_LocalPosition: {x: -100, y: -0.86, z: 19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3607,7 +3644,7 @@ Camera:
   m_GameObject: {fileID: 1987638197}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0, g: 0.57254905, b: 1, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
