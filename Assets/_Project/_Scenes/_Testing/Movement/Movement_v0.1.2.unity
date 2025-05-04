@@ -199,7 +199,7 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 277735056}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerMovement_v0_1_2, Assembly-CSharp
         m_MethodName: Jump
         m_Mode: 0
@@ -353,9 +353,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5522c6556eb511f43a1fe1e5062da57a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 10
-  acceleration: 20
-  accelerationFactorFromDot:
+  _maxSpeed: 8
+  speedFactor: 1
+  groundVel: {x: 0, y: 0, z: 0}
+  _acceleration: 200
+  _accelerationFactorFromDot:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -379,8 +381,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  maxAccelerationForce: 150
-  accelerationForceFactorFromDot:
+  _gravityScaleDrop: 10
+  _maxAccelerationForce: 150
+  _maxAccelerationForceFactorFromDot:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -404,10 +407,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  forceScale: {x: 1, y: 0, z: 1}
-  gravityScaleDrop: 10
+  _forceScale: {x: 1, y: 0, z: 1}
   upForce: 250
-  m_movementInput: {fileID: -6622010300307445888, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
+  m_movementInputAction: {fileID: 0}
 --- !u!1 &349693575
 GameObject:
   m_ObjectHideFlags: 0

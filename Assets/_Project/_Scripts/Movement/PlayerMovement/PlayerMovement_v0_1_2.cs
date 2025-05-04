@@ -1,5 +1,7 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 using static UnityEngine.InputSystem.InputAction;
 
 
@@ -7,35 +9,68 @@ using static UnityEngine.InputSystem.InputAction;
 public class PlayerMovement_v0_1_2 : MonoBehaviour
 {
     [Header("Locomotion")]
-    
-    [Range(5f, 20f)] [SerializeField] 
-    private float maxSpeed = 8f;    // Velocidad maxima
+    [Space(5)]
+    [Header("    Direction 📐")]  // Direcciones de movimiento
 
-    [Range(100f, 300f)] [SerializeField] 
-    private float acceleration = 200f; // Aceleraci�n
+
+    private Vector3 _unitGoal;
+
+
+    private Vector2 _moveDirectionInput;
+
+    [Space(5)]
+    [Header("    Speed 🚀")]  // Espacios para indentar
+    [Space(5)]
+
+
+    [Range(5f, 20f)]
+    [SerializeField]
+    private float _maxSpeed = 8f;    // Se muestra como "Max Speed"
+
+    private Vector3 _velGoal;       // Velocidad objetivo
+
+    public float speedFactor = 1.0f;
+
+    public Vector3 groundVel = Vector3.zero;
+
+
+    [Space(5)]
+    [Header("    Acceleration ⏩")]  // Espacios para indentar
+    [Space(5)]
+
+    [Range(100f, 300f)]
+    [SerializeField]
+    private float _acceleration = 200f; // Se muestra como "Acceleration"
 
     [SerializeField]
-    private AnimationCurve accelerationFactorFromDot = AnimationCurve.EaseInOut(-1, 2, 1, 1); // Curva predeterminada
+    private AnimationCurve _accelerationFactorFromDot = AnimationCurve.EaseInOut(-1, 2, 1, 1);
 
-    [Range(100f, 300f)] [SerializeField] 
-    private float maxAccelerationForce = 150f;    // Maxima fuerza de aceleracion
+    [Range(5f, 15f)]
+    [SerializeField]
+    private float _gravityScaleDrop = 10f; // "Gravity Scale Drop"
+
+    [Space(5)]
+    [Header("    Force 💪🏻")]  // Espacios para indentar
+    [Space(5)]
+
+
+    [Range(100f, 300f)]
+    [SerializeField]
+    private float _maxAccelerationForce = 150f; // "Max Acceleration Force"
 
     [SerializeField]
-    private AnimationCurve accelerationForceFactorFromDot = AnimationCurve.EaseInOut(-1, 2, 1, 1); // Curva predeterminada
+    private AnimationCurve _maxAccelerationForceFactorFromDot = AnimationCurve.EaseInOut(-1, 2, 1, 1);
 
-    [SerializeField] 
-    Vector3 forceScale = new Vector3(1, 0, 1);
+    [SerializeField]
+    private Vector3 _forceScale = new Vector3(1, 0, 1); // "Force Scale"
 
-    [Range(5f, 15f)] [SerializeField] 
-    private float gravityScaleDrop = 10f;    // Escala de gravedad
 
-    private Vector3 m_UnitGoal;
-
-    private Vector2 moveDirectionInput;
-
+    [Space(5)]
+    [Header("    Stun 💥")]  // Espacios para indentar
+    [Space(5)]
 
     //Stun o aturdimiento
-    private float m_MovementControlDisabledTimer = 0f;
+    private float _movementControlDisabledTimer = 0f;
 
 
     //Salto
@@ -43,17 +78,17 @@ public class PlayerMovement_v0_1_2 : MonoBehaviour
     [Tooltip("Fuerza de salto del jugador")]
     [SerializeField] private float upForce = 250f;
 
-    
+
     private Rigidbody rb;
-    [SerializeField] private InputActionReference m_movementInput;
+    [SerializeField] private InputActionReference _movementInputAction;
 
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        if (m_movementInput != null && m_movementInput.action != null) // Buena práctica comprobar nulls
+        if (_movementInputAction != null && _movementInputAction.action != null) // Buena práctica comprobar nulls
         {
-            m_movementInput.action.Enable();
+            _movementInputAction.action.Enable();
         }
         else
         {
@@ -66,9 +101,9 @@ public class PlayerMovement_v0_1_2 : MonoBehaviour
     void Update()
     {
         // Guarda el input 2D leído
-        if (m_movementInput != null && m_movementInput.action != null)
+        if (_movementInputAction != null && _movementInputAction.action != null)
         {
-            moveDirectionInput = m_movementInput.action.ReadValue<Vector2>();
+            _moveDirectionInput = _movementInputAction.action.ReadValue<Vector2>();
         }
     }
 
@@ -80,13 +115,13 @@ public class PlayerMovement_v0_1_2 : MonoBehaviour
 
     void ProcessMovementInput(float time)
     {
-        Vector2 currentInput = moveDirectionInput;
+        Vector2 currentInput = _moveDirectionInput;
 
         // 2. Comprueba si el control está deshabilitado por el temporizador
-        if (m_MovementControlDisabledTimer > 0f)
+        if (_movementControlDisabledTimer > 0f)
         {
             currentInput = Vector2.zero; // ¡Usa Vector2.zero!
-            m_MovementControlDisabledTimer -= time; // ¡Usa Time.fixedDeltaTime!
+            _movementControlDisabledTimer -= time; // ¡Usa Time.fixedDeltaTime!
         }
         else
         {
@@ -99,7 +134,7 @@ public class PlayerMovement_v0_1_2 : MonoBehaviour
             // 4. Convierte el Vector2 procesado a un Vector3 para m_UnitGoal
             //    Asumimos que el movimiento es en el plano XZ
             //    Input X -> World X, Input Y -> World Z
-            m_UnitGoal = new Vector3(currentInput.x, 0f, currentInput.y);
+            _unitGoal = new Vector3(currentInput.x, 0f, currentInput.y);
 
             // --- Fin del procesamiento de la entrada ---
 
@@ -116,18 +151,32 @@ public class PlayerMovement_v0_1_2 : MonoBehaviour
 
     void Moverse()
     {
-        // Ahora esta función ya no calcula m_UnitGoal, sino que lo USA.
-        // Aquí es donde añadirás la lógica de fuerzas, velocidad, etc.
-        // utilizando m_UnitGoal como la dirección deseada.
+        //1) Calcula la dirección normalizada de la velocidad objetivo actual del script. Obtener solo la dirección (un vector de magnitud 1) es necesario para calcular el "dot product" (producto escalar) en el siguiente paso.
+        Vector3 unitVel = _velGoal.normalized;
 
-        // Por ejemplo (esto es solo para ilustrar, no es la implementación final):
-        // Vector3 desiredVelocity = m_UnitGoal * maxSpeed;
-        // Vector3 force = (desiredVelocity - rb.velocity) * acceleration;
-        // rb.AddForce(force);
+        // 2) producto escalar entre la dirección del input deseado y dirección de la velocidad objetivo actual. Este valor (velDot) se usa para saber
+        // si el jugador está intentando acelerar en la misma dirección, cambiar de dirección, o ir en la dirección opuesta a la que actualmente tiene la velocidad objetivo.
 
-        // De momento, podemos imprimir m_UnitGoal para verificar que se calcula bien:
-        CustomLogger.Log(this, $"m_UnitGoal: {m_UnitGoal}, Timer: {m_MovementControlDisabledTimer}");
-        Debug.Log("Hello");
+        float velDot = Vector3.Dot(_unitGoal, unitVel);
+
+        //3) Calcula la aceleración efectiva para este paso físico.  multiplica por un factor obtenido evaluando la curva _accelerationFactorFromDot usando velDot como el "tiempo" o punto de entrada en la curva.
+        //Si velDot es -1 (input opuesto a _velGoal), el factor es 2. Aceleración = _acceleration * 2.
+        //Si velDot es 1(input igual a _velGoal), el factor es 1.Aceleración = _acceleration * 1.
+        //Si velDot es 0(input perpendicular a _velGoal), el factor es aproximadamente 1.5(dependiendo de la curva exacta).Aceleración = _acceleration * 1.5.
+
+        float accel = _acceleration * _accelerationFactorFromDot.Evaluate(velDot);
+
+
+        //4) Calcula la velocidad objetivo final que el personaje debería intentar alcanzar en este momento, basada puramente en el input del jugador.
+        //Esto te da el vector de velocidad ideal si el jugador estuviera instantáneamente a la velocidad máxima en la dirección deseada, modificada por un factor externo
+
+        Vector3 velGoal = _unitGoal * _maxSpeed * speedFactor;
+
+
+        //5) Actualiza el vector de velocidad objetivo interno
+        _velGoal = Vector3.MoveTowards(_velGoal, (velGoal) + (groundVel), accel * Time.fixedDeltaTime);
+
+        CustomLogger.Log(this, $"m_UnitGoal: {_unitGoal}, Timer: {_movementControlDisabledTimer}");
     }
 
 
@@ -141,17 +190,21 @@ public class PlayerMovement_v0_1_2 : MonoBehaviour
 
     }
 
+     
+
 
     #region Logica de destruccion o desactivacion
     private void OnDestroy()
     {
-        m_movementInput.action.Disable();
+        _movementInputAction.action.Disable();
     }
 
     private void OnDisable()
     {
-        m_movementInput.action.Disable();
+        _movementInputAction.action.Disable();
     }
 
     #endregion
 }
+
+
