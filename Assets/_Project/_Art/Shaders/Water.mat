@@ -66,7 +66,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FoamTexture:
-        m_Texture: {fileID: 2800000, guid: 2bf670e6967a08940bee4d92cc284276, type: 3}
+        m_Texture: {fileID: 2800000, guid: 4552985726bb78c458e7c08aef5d6f50, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -134,14 +134,14 @@ Material:
     - _EnvironmentReflections: 1
     - _FluamAomunt: 0
     - _FoamAomunt: 0.2
-    - _FoamCutOut: 0.26
+    - _FoamCutOut: 0.33
     - _FoamCutout: 0
     - _FoamDepth: 5.42
-    - _FoamFalloff: 0.38
+    - _FoamFalloff: 0.5
     - _FoamMaxDistance: 0.4
     - _FoamMinDistance: 0.04
     - _FoamShoreWidth: 0.8
-    - _FoamTilling: 2
+    - _FoamTilling: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -172,7 +172,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FoamColor: {r: 1, g: 1, b: 1, a: 1}
     - _FoamSpeed: {r: -0.001, g: 0.01, b: 0, a: 0}
-    - _MainColor: {r: 0.015574946, g: 0.24720618, b: 0.4716981, a: 0}
+    - _MainColor: {r: 0.015574945, g: 0.24720615, b: 0.4716981, a: 0}
     - _ShoreColor: {r: 0.29156286, g: 0.44055465, b: 0.6792453, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SurfaceNoiseScroll: {r: 0.03, g: 0.03, b: 0, a: 0}
