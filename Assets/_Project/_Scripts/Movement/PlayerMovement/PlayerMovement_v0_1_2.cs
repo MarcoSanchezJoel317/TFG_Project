@@ -1,13 +1,16 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
 using static UnityEngine.InputSystem.InputAction;
 
 
 //[RequireComponent(typeof(InputActionReference))]
 public class PlayerMovement_v0_1_2 : MonoBehaviour
 {
+
+    private Rigidbody _rb;
+    [SerializeField] private InputActionReference _movementInputAction;
+
+
     [Header("Locomotion")]
     [Space(5)]
     [Header("    Direction 📐")]  // Direcciones de movimiento
@@ -43,7 +46,7 @@ public class PlayerMovement_v0_1_2 : MonoBehaviour
     private float _acceleration = 200f; // Se muestra como "Acceleration"
 
     [SerializeField]
-    private AnimationCurve _accelerationFactorFromDot = AnimationCurve.EaseInOut(-1, 2, 1, 1);
+    private AnimationCurve _accelerationFactorFromDot = AnimationCurve.EaseInOut(-1, 0.1f, 1, 1);
 
     [Range(5f, 15f)]
     [SerializeField]
@@ -59,10 +62,13 @@ public class PlayerMovement_v0_1_2 : MonoBehaviour
     private float _maxAccelerationForce = 150f; // "Max Acceleration Force"
 
     [SerializeField]
-    private AnimationCurve _maxAccelerationForceFactorFromDot = AnimationCurve.EaseInOut(-1, 2, 1, 1);
+    private AnimationCurve _maxAccelerationForceFactorFromDot = AnimationCurve.EaseInOut(-1, 0.1f, 1, 1);
 
     [SerializeField]
     private Vector3 _forceScale = new Vector3(1, 0, 1); // "Force Scale"
+
+    [SerializeField] 
+    private float _maxAccelForceFactor = 1.0f;
 
 
     [Space(5)]
@@ -73,19 +79,25 @@ public class PlayerMovement_v0_1_2 : MonoBehaviour
     private float _movementControlDisabledTimer = 0f;
 
 
+    [Header("Jump 🐇")]
+    [Space(5)]
     //Salto
 
     [Tooltip("Fuerza de salto del jugador")]
     [SerializeField] private float upForce = 250f;
 
 
-    private Rigidbody rb;
-    [SerializeField] private InputActionReference _movementInputAction;
+    
 
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        _rb = GetComponent<Rigidbody>();
+
+    }
+
+    private void OnEnable()
+    {
         if (_movementInputAction != null && _movementInputAction.action != null) // Buena práctica comprobar nulls
         {
             _movementInputAction.action.Enable();
@@ -176,21 +188,39 @@ public class PlayerMovement_v0_1_2 : MonoBehaviour
         //5) Actualiza el vector de velocidad objetivo interno
         _velGoal = Vector3.MoveTowards(_velGoal, (velGoal) + (groundVel), accel * Time.fixedDeltaTime);
 
+        AplicarFuerza(Time.fixedDeltaTime, velDot);
+
         CustomLogger.Log(this, $"m_UnitGoal: {_unitGoal}, Timer: {_movementControlDisabledTimer}");
     }
 
+    void AplicarFuerza(float tiempo, float velDot)
+    {
+        Vector3 neededAccel = (_velGoal - _rb.linearVelocity) / tiempo;
 
+        float maxAccel = _maxAccelerationForce * _maxAccelerationForceFactorFromDot.Evaluate(velDot) * _maxAccelForceFactor;
+
+        neededAccel = Vector3.ClampMagnitude(neededAccel, maxAccel);
+
+        _rb.AddForce(Vector3.Scale(neededAccel * _rb.mass, _forceScale));
+
+
+        //Realmente no pone rb.rb.linearVelocity, pone _setup.rider.rigidbody.velocity, pero he supuesto que se refiere a lo mismo, ya que en esta version no existe tampoco velocity, solo linear y angular
+    }
+
+
+    #region Logica de salto
+    //Logica del salto
     public void Jump(InputAction.CallbackContext callbackContext)
     {
         if (callbackContext.performed)
         {
-            rb.AddForce(Vector3.up * upForce);
+            _rb.AddForce(Vector3.up * upForce);
         }
         Debug.Log(callbackContext.phase, this.gameObject);
 
     }
+    #endregion
 
-     
 
 
     #region Logica de destruccion o desactivacion

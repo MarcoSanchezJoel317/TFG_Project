@@ -165,6 +165,7 @@ GameObject:
   - component: {fileID: 277735051}
   - component: {fileID: 277735050}
   - component: {fileID: 277735056}
+  - component: {fileID: 277735057}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -348,15 +349,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 277735048}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5522c6556eb511f43a1fe1e5062da57a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _movementInputAction: {fileID: -6622010300307445888, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
-  _maxSpeed: 8
+  _maxSpeed: 5
   speedFactor: 1
-  groundVel: {x: 0, y: 0, z: 0}
+  groundVel: {x: -8.34, y: 0, z: 0}
   _acceleration: 200
   _accelerationFactorFromDot:
     serializedVersion: 2
@@ -429,6 +430,128 @@ MonoBehaviour:
   _forceScale: {x: 1, y: 0, z: 1}
   _maxAccelForceFactor: 1
   upForce: 250
+--- !u!114 &277735057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 277735048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcee26ca1173bd945b988a274202dc30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _movementInputAction: {fileID: -6622010300307445888, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
+  _directionalSpeedFactorFromDot:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -1
+      value: 0.7
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0
+      value: 0.4
+      inSlope: 0.15000004
+      outSlope: 0.15000004
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.15
+      outSlope: 0.15
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _maxSpeed: 8
+  speedFactor: 1
+  groundVel: {x: 0, y: 0, z: 0}
+  _acceleration: 200
+  _accelerationFactorFromDot:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -1
+      value: 0.1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _gravityScaleDrop: 10
+  _maxAccelerationForce: 150
+  _maxAccelerationForceFactorFromDot:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -1
+      value: 0.01
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0
+      value: 0.031708986
+      inSlope: 0.02753714
+      outSlope: 0.02753714
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.10975847
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5
+      value: 0.2
+      inSlope: 0.71681213
+      outSlope: 0.71681213
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.22148848
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _forceScale: {x: 1, y: 0, z: 1}
+  _maxAccelForceFactor: 1
+  upForce: 250
+  _strafeSpeedMultiplier: 0.7
 --- !u!1 &349693575
 GameObject:
   m_ObjectHideFlags: 0
@@ -688,7 +811,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'v 0.1.2
+  m_text: 'v 0.1.3
 
 
 '
