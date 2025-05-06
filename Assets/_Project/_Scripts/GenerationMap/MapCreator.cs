@@ -299,14 +299,14 @@ public class MapCreator : MonoBehaviour
         {
             for (int x = 0; x < xSize; x++)
             {
-                Vector3 position = new Vector3(y * wall.transform.localScale.x, 0, x * wall.transform.localScale.y); // Posiciona en el mundo
+                Vector3 position = new Vector3(y * wall.transform.localScale.x, 0, x * wall.transform.localScale.z); // Posiciona en el mundo
 
                 GameObject obj;
                 GameObject ene;
 
                 if (map[y][x][0] == 1)
                 {
-                    obj = Instantiate(wall, position, Quaternion.identity);
+                    obj = Instantiate(wall, position + new Vector3(0, -0.4f, 0), Quaternion.identity);
                     dataMap[y][x] = -2;
                 }
                 else
