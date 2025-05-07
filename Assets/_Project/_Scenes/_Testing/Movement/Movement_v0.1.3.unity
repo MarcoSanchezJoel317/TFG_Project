@@ -2813,6 +2813,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7864948647168575723, guid: 3c77d3b982404e143942a0808ed1fc15, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 29c4321da72797944a2493da9f34aa7f, type: 2}
+    - target: {fileID: 7864948647168575723, guid: 3c77d3b982404e143942a0808ed1fc15, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1fcc4ef5e1e92e0439379e920d34f3c0, type: 2}
     - target: {fileID: 7864948647182146037, guid: 3c77d3b982404e143942a0808ed1fc15, type: 3}
       propertyPath: m_LocalScale.x
       value: 2.24
@@ -3435,6 +3443,14 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3720450451791941402, guid: 7aeddcd9d30a9724c86f09cbb1f27238, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e6df58f2afda88d4b839905d86144c86, type: 2}
+    - target: {fileID: 3720450451791941402, guid: 7aeddcd9d30a9724c86f09cbb1f27238, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 39ec532758d410545bf8e02832330f71, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3775,13 +3791,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1894505802}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.33604196, y: 0.56104136, z: 0.39799577, w: 0.6433566}
+  m_LocalRotation: {x: -0.47691286, y: -0.22061965, z: -0.20947288, w: -0.8246225}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -0.813, y: 81.684, z: 62.781}
+  m_LocalEulerAnglesHint: {x: 43.957, y: -308.463, z: 50.555}
 --- !u!114 &1894505805
 MonoBehaviour:
   m_ObjectHideFlags: 0
