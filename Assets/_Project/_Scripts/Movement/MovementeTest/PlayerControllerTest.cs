@@ -4,6 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerControllerTest : MonoBehaviour
 {
+    [Header("Control Movimiento")]
     public float moveSpeed = 5f;
     public float rotationSpeed = 720f;
 
@@ -38,7 +39,7 @@ public class PlayerControllerTest : MonoBehaviour
             else
             {
                 animator.SetBool("Run", false);
-                moveSpeed = 5f;
+                moveSpeed = 3f;
             }
 
             animator.SetFloat("XSpeed", h);
@@ -68,6 +69,15 @@ public class PlayerControllerTest : MonoBehaviour
             Vector3 moveDir = Camera.main.transform.TransformDirection(inputDirection);
             moveDir.y = 0f;
             moveDir.Normalize();
+
+            // --- Nuevo bloque: ajustar según pendiente ---
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out hit, 2f))
+            {
+                // Proyectar la dirección sobre el plano del suelo
+                moveDir = Vector3.ProjectOnPlane(moveDir, hit.normal).normalized;
+            }
+            // ------------------------------------------------
 
             Vector3 moveVelocity = moveDir * moveSpeed;
             rb.MovePosition(rb.position + moveVelocity * Time.fixedDeltaTime);
