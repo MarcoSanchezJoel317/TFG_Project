@@ -4222,6 +4222,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3084409588468865971, guid: 552c9e40d42abe64594ad31577944fef, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3470122057033751619, guid: 552c9e40d42abe64594ad31577944fef, type: 3}
       propertyPath: m_Name
       value: Sheep_PBR
