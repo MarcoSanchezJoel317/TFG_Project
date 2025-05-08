@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerControllerTest : MonoBehaviour
 {
     [Header("Control Movimiento")]
-    public float moveSpeed = 5f;
+    public float moveSpeed = 30f;
     public float rotationSpeed = 720f;
 
     private Rigidbody rb;
@@ -34,12 +34,12 @@ public class PlayerControllerTest : MonoBehaviour
             if (run)
             {
                 animator.SetBool("Run", true);
-                moveSpeed = 10f;
+                moveSpeed = 100f;
             }
             else
             {
                 animator.SetBool("Run", false);
-                moveSpeed = 3f;
+                moveSpeed = 30f;
             }
 
             animator.SetFloat("XSpeed", h);
