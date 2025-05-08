@@ -80,7 +80,7 @@ public class PlayerControllerTest : MonoBehaviour
             // ------------------------------------------------
 
             Vector3 moveVelocity = moveDir * moveSpeed;
-            //rb.MovePosition(rb.position + moveVelocity * Time.fixedDeltaTime);
+            rb.MovePosition(rb.position + moveVelocity * Time.fixedDeltaTime);
 
             // Rotar suavemente hacia la dirección de movimiento
             Quaternion targetRotation;
