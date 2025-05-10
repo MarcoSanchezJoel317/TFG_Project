@@ -6,20 +6,34 @@ using static UnityEngine.InputSystem.InputAction;
 public class PlayerMovement_v0_1_4 : MonoBehaviour
 {
     private Rigidbody _rb;
+    private Animator _animator; // Referencia al Animator
+
+    [Header("Input Actions")]
     [SerializeField] private InputActionReference _movementInputAction;
+    [SerializeField] private InputActionReference _sprintInputAction; // Nueva acción para Sprint
+    [SerializeField] private InputActionReference _jumpInputAction; // Asumimos que tienes una acción de salto separada
 
     [Header("Locomotion")]
     [Space(5)]
     [Header("    Direction 📐")]  // Direcciones de movimiento
+    [SerializeField] 
     private Vector3 _unitGoal;
+
+    [SerializeField]
     private Vector2 _moveDirectionInput;
+
+    [SerializeField]
+    private Vector2 _animationInput; // Input 2D para animaciones (relativo al personaje)
+
 
     [Space(5)]
     [Header("    Speed 🚀")]  // Espacios para indentar
     [Space(5)]
+
     [Range(5f, 20f)]
     [SerializeField]
     private float _maxSpeed = 8f;    // Se muestra como "Max Speed"
+
     private Vector3 _velGoal;       // Velocidad objetivo
     public float speedFactor = 1.0f;
     public Vector3 groundVel = Vector3.zero;
@@ -27,11 +41,14 @@ public class PlayerMovement_v0_1_4 : MonoBehaviour
     [Space(5)]
     [Header("    Acceleration ⏩")]  // Espacios para indentar
     [Space(5)]
+
     [Range(100f, 300f)]
     [SerializeField]
     private float _acceleration = 200f; // Se muestra como "Acceleration"
+
     [SerializeField]
     private AnimationCurve _accelerationFactorFromDot = AnimationCurve.EaseInOut(-1, 0.1f, 1, 1);
+
     [Range(5f, 15f)]
     [SerializeField]
     private float _gravityScaleDrop = 10f; // "Gravity Scale Drop"
@@ -39,27 +56,35 @@ public class PlayerMovement_v0_1_4 : MonoBehaviour
     [Space(5)]
     [Header("    Force 💪🏻")]  // Espacios para indentar
     [Space(5)]
+
     [Range(100f, 300f)]
     [SerializeField]
     private float _maxAccelerationForce = 150f; // "Max Acceleration Force"
+
     [SerializeField]
     private AnimationCurve _maxAccelerationForceFactorFromDot = AnimationCurve.EaseInOut(-1, 0.1f, 1, 1);
+
     [SerializeField]
     private Vector3 _forceScale = new Vector3(1, 0, 1); // "Force Scale"
+
     [SerializeField]
     private float _maxAccelForceFactor = 1.0f;
 
     [Space(5)]
     [Header("    Stun 💥")]  // Espacios para indentar
     [Space(5)]
-    //Stun o aturdimiento
-    private float _movementControlDisabledTimer = 0f;
 
-    [Header("Jump 🐇")]
+    [SerializeField] 
+    private float _movementControlDisabledTimer = 0f; //Stun o aturdimiento
+
+    [Space(15)]
+    [Header("Jump")]
     [Space(5)]
     //Salto
     [Tooltip("Fuerza de salto del jugador")]
-    [SerializeField] private float upForce = 250f;
+
+    [SerializeField] 
+    private float upForce = 250f;
 
     void Awake()
     {

@@ -16,6 +16,7 @@ public class PlayerControllerTest : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        
         animator = GetComponent<Animator>();
     }
 
