@@ -160,7 +160,6 @@ namespace BehaviourTrees
                     return status;
                 currentChild++;
             }
-
             Reset();
             return Status.Succsess;            
         }
