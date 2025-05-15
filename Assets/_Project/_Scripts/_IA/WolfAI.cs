@@ -17,6 +17,9 @@ public class WolfAI : MonoBehaviour
     bool detected = false;
     bool hear = false;
     Vector3 initialPos;
+    NavMeshAgent agent;
+    BehaviourTree tree;
+    Node.Status callBack = Node.Status.Failure;
 
     /*[Header("Raycast Settings")]
     [SerializeField] float coneAngle = 120f;           // Ángulo del cono
@@ -32,15 +35,22 @@ public class WolfAI : MonoBehaviour
     [SerializeField] float areaRadius = 100f;
     [SerializeField] float lookAroundSpeed = 90f; // grados por segundo
 
-    NavMeshAgent agent;
-    BehaviourTree tree;
-    Node.Status callBack = Node.Status.Failure;
+    [Header("Animation and Visuals")]
+    Animator animator;
+    float raycastDistance = 2f;
+    LayerMask groundMask = Physics.DefaultRaycastLayers;
+    float alignSpeed = 10f; // velocidad de interpolación
+
 
     private void Awake()
     {
         player = GameObject.FindWithTag("Player");
+        animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         initialPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+
+        agent.updateUpAxis = false;
+        agent.updateRotation = true;
 
         tree = new BehaviourTree("WolfAI");
 
@@ -52,9 +62,9 @@ public class WolfAI : MonoBehaviour
 
         Secuence lookAround = new Secuence("LookAround", 5);
         lookAround.AddChild(new Leaf("HearSomething", new Condition(() => hear)));
-        lookAround.AddChild(new Leaf("TurnAround", new TurnAroundStrategy(transform, agent, lookAroundSpeed)));
+        lookAround.AddChild(new Leaf("TurnAround", new TurnAroundStrategy(transform, agent, lookAroundSpeed, animator)));
 
-        Leaf wander = new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius), 0);
+        Leaf wander = new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius, animator), 0);
 
         actions.AddChild(detectAndPersecute);
         actions.AddChild(lookAround);
@@ -65,11 +75,38 @@ public class WolfAI : MonoBehaviour
 
     private void Update()
     {
-        //DetectPlayer();
+        // Datos variables del comportamiento        
         detected = IsDetected(player.transform);
         hear = IsHearing();
 
+        // Inicio del árbol de decisiones
         callBack = tree.Process();
+
+        // Control animación corer
+        if (detected)
+        {
+            animator.SetBool("Running", true);
+            agent.speed = 10;
+        }
+        else
+        {
+            animator.SetBool("Running", false);
+            agent.speed = 2;
+        }            
+    }
+
+    private void FixedUpdate()
+    {
+        Ray ray = new Ray(transform.position + Vector3.up * 0.5f, Vector3.down);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, groundMask))
+        {
+            // Obtén la rotación deseada en base a la normal del terreno
+            Quaternion targetRotation = Quaternion.LookRotation(transform.forward, hit.normal);
+
+            // Interpola suavemente hacia esa rotación
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, alignSpeed * Time.deltaTime);
+        }
     }
 
     /*void DetectPlayer()
@@ -116,7 +153,7 @@ public class WolfAI : MonoBehaviour
 
     private bool IsDetected(Transform target)
     {
-        Vector3 start = transform.position;
+        Vector3 start = transform.position + Vector3.up;
         Vector3 end = player.transform.position + Vector3.up;
         Vector3 directionToTarget = end - start;
 
@@ -127,7 +164,7 @@ public class WolfAI : MonoBehaviour
         if (!detected)
         {
             float distance = directionToTarget.magnitude;
-            //Debug.DrawLine(start, end, Color.red, 2f);
+            Debug.DrawLine(start, end, Color.red, 2f);
 
             if (Physics.Raycast(start, directionToTarget.normalized, out RaycastHit hit, distance))
                 if (!hit.collider.CompareTag("Player")) return false;

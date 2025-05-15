@@ -91,15 +91,17 @@ namespace BehaviourTrees
         readonly Vector3 initialPos;
         readonly NavMeshAgent agent;
         readonly float areaRadius;
+        readonly Animator animator;
 
         Vector3 destination = Vector3.zero;
 
-        public PatrolAreaStrategy(Transform entity, Vector3 initialPos, NavMeshAgent agent, float areaRadius)
+        public PatrolAreaStrategy(Transform entity, Vector3 initialPos, NavMeshAgent agent, float areaRadius, Animator animator)
         {
             this.entity = entity;
             this.initialPos = initialPos;
             this.agent = agent;
             this.areaRadius = areaRadius;
+            this.animator = animator;
         }
 
         public Node.Status Process()
@@ -117,6 +119,7 @@ namespace BehaviourTrees
             }
             else return Node.Status.Succsess;
 
+            animator.SetBool("Walking", true);
             return Node.Status.Running;
         }
     }
@@ -125,19 +128,22 @@ namespace BehaviourTrees
     {
         readonly Transform transform;
         readonly NavMeshAgent agent;
+        readonly Animator animator;
         float totalAngle = 0;
         int stage = 0;
         float speed;
 
-        public TurnAroundStrategy(Transform transform, NavMeshAgent agent, float speed)
+        public TurnAroundStrategy(Transform transform, NavMeshAgent agent, float speed, Animator animator)
         {
             this.transform = transform;
             this.agent = agent;
             this.speed = speed;
+            this.animator = animator;
         }
 
         public Node.Status Process()
         {
+            animator.SetBool("Walking", false);
             float step = speed * Time.deltaTime;
             agent.ResetPath();
             switch (stage)
