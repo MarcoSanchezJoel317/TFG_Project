@@ -62,9 +62,9 @@ public class WolfAI : MonoBehaviour
 
         Secuence lookAround = new Secuence("LookAround", 5);
         lookAround.AddChild(new Leaf("HearSomething", new Condition(() => hear)));
-        lookAround.AddChild(new Leaf("TurnAround", new TurnAroundStrategy(transform, agent, lookAroundSpeed, animator)));
+        lookAround.AddChild(new Leaf("TurnAround", new TurnAroundStrategy(transform, agent, lookAroundSpeed)));
 
-        Leaf wander = new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius, animator), 0);
+        Leaf wander = new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius), 0);
 
         actions.AddChild(detectAndPersecute);
         actions.AddChild(lookAround);
@@ -79,34 +79,12 @@ public class WolfAI : MonoBehaviour
         detected = IsDetected(player.transform);
         hear = IsHearing();
 
-        // Inicio del árbol de decisiones
-        callBack = tree.Process();
-
-        // Control animación corer
         if (detected)
-        {
-            animator.SetBool("Running", true);
             agent.speed = 10;
-        }
-        else
-        {
-            animator.SetBool("Running", false);
-            agent.speed = 2;
-        }            
-    }
+        else agent.speed = 2;
 
-    private void FixedUpdate()
-    {
-        Ray ray = new Ray(transform.position + Vector3.up * 0.5f, Vector3.down);
-
-        if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, groundMask))
-        {
-            // Obtén la rotación deseada en base a la normal del terreno
-            Quaternion targetRotation = Quaternion.LookRotation(transform.forward, hit.normal);
-
-            // Interpola suavemente hacia esa rotación
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, alignSpeed * Time.deltaTime);
-        }
+        // Inicio del árbol de decisiones
+        callBack = tree.Process();            
     }
 
     /*void DetectPlayer()
