@@ -14,6 +14,10 @@ public class WolfAnimation : MonoBehaviour
     Transform parentTransform;
     Vector3 LastPos;
     Quaternion lastRotation;
+    float valueY = 1;
+
+    [Header("AIconection")]
+    [SerializeField]WolfAI wolfAI;
     
     private void Start()
     {
@@ -21,6 +25,7 @@ public class WolfAnimation : MonoBehaviour
         parentTransform = transform.parent;
         lastRotation = parentTransform.rotation;
         LastPos = transform.position;
+        wolfAI = transform.parent.gameObject.GetComponent<WolfAI>();
     }
     private void Update()
     {
@@ -30,9 +35,20 @@ public class WolfAnimation : MonoBehaviour
         float XMotion = animator.GetFloat("MotionX");
         float YMotion = animator.GetFloat("MotionY");
 
+        if (wolfAI.detected)
+        {
+            animator.SetBool("Run", true);
+            if (wolfAI.agent.remainingDistance < 5f)
+                valueY = -1;
+        }
+        else{
+            animator.SetBool("Run", false);
+            valueY = 1;
+        }            
+
         // Movement
         if (LastPos != nowPos)
-            animator.SetFloat("MotionY", 1);
+            animator.SetFloat("MotionY", valueY);
         else animator.SetFloat("MotionY", 0);
 
         // Rotation

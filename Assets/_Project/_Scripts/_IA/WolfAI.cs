@@ -14,10 +14,10 @@ public class WolfAI : MonoBehaviour
     [Header("AI Settings")]
     [SerializeField] List<Transform> wayPoints = new();
     GameObject player;
-    bool detected = false;
+    internal bool detected = false;
     bool hear = false;
     Vector3 initialPos;
-    NavMeshAgent agent;
+    internal NavMeshAgent agent;
     BehaviourTree tree;
     Node.Status callBack = Node.Status.Failure;
 

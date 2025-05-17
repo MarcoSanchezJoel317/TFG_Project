@@ -1083,7 +1083,7 @@ GameObject:
   - component: {fileID: 4001854202446385572}
   - component: {fileID: 7070969280158634840}
   m_Layer: 0
-  m_Name: Sheep_PBR 1
+  m_Name: Player_V0.0.0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
