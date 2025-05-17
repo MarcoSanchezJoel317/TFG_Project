@@ -16,6 +16,7 @@ namespace BehaviourTrees
         }
     }
 
+    // LOGIC STRATEGIES
     public class ActionStrategy : IStrategy
     {
         readonly Action doSomething;
@@ -44,6 +45,7 @@ namespace BehaviourTrees
         public Node.Status Process() => predicate() ? Node.Status.Succsess : Node.Status.Failure;
     }
 
+    // WOLF STRATEGIES
     public class PatrolStrategy : IStrategy
     {
         readonly Transform entity;
