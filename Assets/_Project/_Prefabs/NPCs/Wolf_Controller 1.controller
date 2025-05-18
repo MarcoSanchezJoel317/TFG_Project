@@ -117,7 +117,7 @@ BlendTree:
     m_Mirror: 0
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 8ea65bd4bf3221f4180798788136f106, type: 3}
-    m_Threshold: 0.33333334
+    m_Threshold: 0.22222224
     m_Position: {x: -1, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
@@ -125,16 +125,16 @@ BlendTree:
     m_Mirror: 0
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 37ff42bc3d4f5424491387cf3e8abed0, type: 3}
-    m_Threshold: 0.6666667
+    m_Threshold: 0.44444448
     m_Position: {x: 1, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: MotionY
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 117a44c75ee81af419b042a4acc4eb4f, type: 3}
-    m_Threshold: 1
-    m_Position: {x: 0, y: 2}
+    m_Motion: {fileID: 7400000, guid: 239a61a4bcb00dc4196d963e3a01f8a1, type: 3}
+    m_Threshold: 0.6666667
+    m_Position: {x: 0, y: -1}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: MotionY
@@ -142,7 +142,7 @@ BlendTree:
   m_BlendParameter: MotionX
   m_BlendParameterY: MotionY
   m_MinThreshold: 0
-  m_MaxThreshold: 1
+  m_MaxThreshold: 0.6666667
   m_UseAutomaticThresholds: 1
   m_NormalizedBlendValues: 0
   m_BlendType: 1
@@ -152,7 +152,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Wolf_Controller
+  m_Name: Wolf_Controller 1
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: MotionY
