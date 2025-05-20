@@ -9,14 +9,13 @@ public static class CustomLogger
     public static bool EnableLogs = false;
 #endif
 
+    // Siempre disponible en compilación, pero con cuerpo vacío fuera del editor
     public static void Log(
         MonoBehaviour context,
         string message,
-#if UNITY_EDITOR
         [CallerMemberName] string memberName = "",
         [CallerFilePath] string filePath = "",
         [CallerLineNumber] int lineNumber = 0
-#endif
     )
     {
 #if UNITY_EDITOR
@@ -25,13 +24,14 @@ public static class CustomLogger
         string scriptName = System.IO.Path.GetFileNameWithoutExtension(filePath);
         string objectName = context.gameObject.name;
 
-        // Formato en una sola línea con separadores
         string formattedMessage =
-    $"<color=green>▶ {scriptName}</color> | " + // ▶ es un triángulo Unicode
-    $"<color=blue>⚓ {objectName}</color> | " + // ⚓ anclaje
-    $"📏 Line: <color=magenta>{lineNumber}</color> | " +
-    $"{message}";
+            $"<color=green>▶ {scriptName}</color> | " +
+            $"<color=blue>⚓ {objectName}</color> | " +
+            $"📏 Line: <color=magenta>{lineNumber}</color> | " +
+            $"{message}";
+
         Debug.Log(formattedMessage, context.gameObject);
 #endif
     }
 }
+
