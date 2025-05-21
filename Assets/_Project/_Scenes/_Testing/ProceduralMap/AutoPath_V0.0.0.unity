@@ -677,9 +677,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049caf350064e5441adf52621f36c5a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minRooms: 8
+  minRooms: 10
   maxRooms: 12
-  wallSice: 2
+  wallSice: 4
   randomizeSice: 3
   oneBetween: 200
   forests:
