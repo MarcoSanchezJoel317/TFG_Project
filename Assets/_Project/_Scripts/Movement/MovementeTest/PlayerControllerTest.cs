@@ -6,6 +6,8 @@ public class PlayerControllerTest : MonoBehaviour
 {
     [Header("Control Movimiento")]
     public float moveSpeed = 30f;
+    public float walkSpeed = 30f;
+    public float sprintSpeed = 50f;
     public float rotationSpeed = 720f;
 
     private Rigidbody rb;
@@ -35,12 +37,12 @@ public class PlayerControllerTest : MonoBehaviour
             if (run)
             {
                 animator.SetBool("Run", true);
-                moveSpeed = 100f;
+                moveSpeed = sprintSpeed;
             }
             else
             {
                 animator.SetBool("Run", false);
-                moveSpeed = 30f;
+                moveSpeed = walkSpeed;
             }
 
             animator.SetFloat("XSpeed", h);
