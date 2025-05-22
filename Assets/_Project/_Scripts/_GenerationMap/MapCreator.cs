@@ -279,7 +279,7 @@ public class MapCreator : MonoBehaviour
                     for (int aJ = -1; aJ < 2; aJ++)
                         for (int aI = -1; aI < 2; aI++)
                         {
-                            if (j + aJ > 0 && j + aJ < ySize && i + aI > 0 && i + aI < xSize)
+                            if (j + aJ >= 0 && j + aJ < ySize && i + aI >= 0 && i + aI < xSize)
                                 if (map[j + aJ][i + aI][0] == 3)
                                 {
                                     map[j + aJ][i + aI][0] = 1;
