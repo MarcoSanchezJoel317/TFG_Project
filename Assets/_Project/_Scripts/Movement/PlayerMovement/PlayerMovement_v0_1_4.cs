@@ -49,9 +49,6 @@ public class PlayerMovement_v0_1_4 : MonoBehaviour
     [SerializeField]
     private AnimationCurve _accelerationFactorFromDot = AnimationCurve.EaseInOut(-1, 0.1f, 1, 1);
 
-    [Range(5f, 15f)]
-    [SerializeField]
-    private float _gravityScaleDrop = 10f; // "Gravity Scale Drop"
 
     [Space(5)]
     [Header("    Force 💪🏻")]  // Espacios para indentar
