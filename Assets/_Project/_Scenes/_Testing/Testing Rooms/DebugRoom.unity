@@ -3380,7 +3380,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 72
   _isGroundThreshold: 0.6
-  _baseRideHeight: 2.5
+  _baseRideHeight: 2
   _rideSpringStrenght: 100
   _rideSpringDamper: 10
   _breathingAmplitude: 0.2
@@ -3427,24 +3427,35 @@ MonoBehaviour:
   _movementInputAction: {fileID: 4246069725771403604, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
   _sprintInputAction: {fileID: 6409635640629513779, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
   _jumpInputAction: {fileID: 978933170503272162, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
+  _targetSheepMovement: {fileID: 1086793917}
+  _sheepMoveSpeedFactor: 0.5
   _unitGoal: {x: 0, y: 0, z: 0}
   _moveDirectionInput: {x: 0, y: 0}
   _maxSpeed: 8
   speedFactor: 1
   groundVel: {x: 0, y: 0, z: 0}
-  _acceleration: 200
+  _acceleration: 8
   _accelerationFactorFromDot:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: -1
-      value: 0.1
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 0
+      value: 0.6
+      inSlope: 0.041077826
+      outSlope: 0.041077826
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.08661414
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
@@ -3457,19 +3468,28 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _maxAccelerationForce: 150
+  _maxAccelerationForce: 80
   _maxAccelerationForceFactorFromDot:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: -1
-      value: 0.1
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 0
+      value: 0.6
+      inSlope: 0.041077826
+      outSlope: 0.041077826
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.08661414
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
@@ -4323,6 +4343,7 @@ GameObject:
   - component: {fileID: 1086793913}
   - component: {fileID: 1086793912}
   - component: {fileID: 1086793916}
+  - component: {fileID: 1086793917}
   m_Layer: 0
   m_Name: _Player
   m_TagString: Untagged
@@ -4430,8 +4451,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1086793910}
   serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
+  m_Mass: 50
+  m_Drag: 4
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -4449,6 +4470,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &1086793917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1086793910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c83300b6b9b34e545aa8917c55f819ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _moveSpeed: 7
+  _targetWillTransform: {fileID: 409725812}
+  _rotationSpeed: 5
 --- !u!1 &1121081345
 GameObject:
   m_ObjectHideFlags: 0
@@ -14116,19 +14152,7 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents:
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 720495783}
-        m_TargetAssemblyTypeName: WillMovement, Assembly-CSharp
-        m_MethodName: Jump
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 1
+      m_Calls: []
     m_ActionId: 66670bb8-a3d8-4dcb-b924-2a2a15015600
     m_ActionName: 'Player/Jump[/Keyboard/space,/XInputControllerWindows/buttonSouth]'
   - m_PersistentCalls:
