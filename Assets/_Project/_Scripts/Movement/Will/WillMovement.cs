@@ -2,220 +2,245 @@
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
-//[RequireComponent(typeof(InputActionReference))]
+// Controla el movimiento físico de la Voluntad basado en el input del jugador y la orientación de la cámara.
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(WillGroundRider))] // Asegura que el GroundRider esté presente
 public class WillMovement : MonoBehaviour
 {
     private Rigidbody _rb;
-    private Animator _animator; // Referencia al Animator
-    [SerializeField]
-    WillGroundRider _groundRider;
+    private WillGroundRider _groundRider;
+    private Transform _mainCameraTransform; // Transform de la cámara principal cacheado
 
     [Header("Input Actions")]
     [SerializeField] private InputActionReference _movementInputAction;
-    [SerializeField] private InputActionReference _sprintInputAction; // Nueva acción para Sprint
-    [SerializeField] private InputActionReference _jumpInputAction; // Asumimos que tienes una acción de salto separada
+    [SerializeField] private InputActionReference _sprintInputAction;
+    [SerializeField] private InputActionReference _jumpInputAction;
+
 
     [Header("Locomotion")]
     [Space(5)]
-    [Header("    Direction 📐")]  // Direcciones de movimiento
-    [SerializeField]
-    private Vector3 _unitGoal;
-
-    [SerializeField]
-    private Vector2 _moveDirectionInput;
-
-    [SerializeField]
-    private Vector2 _animationInput; // Input 2D para animaciones (relativo al personaje)
-
+    [Header("     Direction 📐")]    // Direcciones de movimiento
+    [SerializeField] private Vector3 _unitGoal; // Dirección de movimiento unitaria deseada en espacio de mundo
+    [SerializeField] private Vector2 _moveDirectionInput; // Input 2D crudo del jugador
 
     [Space(5)]
-    [Header("    Speed 🚀")]  // Espacios para indentar
+    [Header("     Speed 🚀")]    // Espacios para indentar
     [Space(5)]
-
     [Range(5f, 20f)]
-    [SerializeField]
-    private float _maxSpeed = 8f;    // Se muestra como "Max Speed"
-
-    private Vector3 _velGoal;       // Velocidad objetivo
-    public float speedFactor = 1.0f;
-    public Vector3 groundVel = Vector3.zero;
+    [SerializeField] private float _maxSpeed = 8f;
+    private Vector3 _velGoal;        // Velocidad objetivo
+    public float speedFactor = 1.0f; // Factor global de velocidad
+    public Vector3 groundVel = Vector3.zero; // Velocidad heredada del suelo en movimiento
 
     [Space(5)]
-    [Header("    Acceleration ⏩")]  // Espacios para indentar
+    [Header("     Acceleration ⏩")]    // Espacios para indentar
     [Space(5)]
-
     [Range(100f, 300f)]
-    [SerializeField]
-    private float _acceleration = 200f; // Se muestra como "Acceleration"
-
-    [SerializeField]
-    private AnimationCurve _accelerationFactorFromDot = AnimationCurve.EaseInOut(-1, 0.1f, 1, 1);
-
-    [Range(5f, 15f)]
-    [SerializeField]
-    private float _gravityScaleDrop = 10f; // "Gravity Scale Drop"
+    [SerializeField] private float _acceleration = 200f;
+    [SerializeField] private AnimationCurve _accelerationFactorFromDot = AnimationCurve.EaseInOut(-1, 0.1f, 1, 1);
 
     [Space(5)]
-    [Header("    Force 💪🏻")]  // Espacios para indentar
+    [Header("     Force 💪🏻")]    // Espacios para indentar
     [Space(5)]
-
     [Range(100f, 300f)]
-    [SerializeField]
-    private float _maxAccelerationForce = 150f; // "Max Acceleration Force"
-
-    [SerializeField]
-    private AnimationCurve _maxAccelerationForceFactorFromDot = AnimationCurve.EaseInOut(-1, 0.1f, 1, 1);
-
-    [SerializeField]
-    private Vector3 _forceScale = new Vector3(1, 0, 1); // "Force Scale"
-
-    [SerializeField]
-    private float _maxAccelForceFactor = 1.0f;
+    [SerializeField] private float _maxAccelerationForce = 150f;
+    [SerializeField] private AnimationCurve _maxAccelerationForceFactorFromDot = AnimationCurve.EaseInOut(-1, 0.1f, 1, 1);
+    [SerializeField] private Vector3 _forceScale = new Vector3(1, 0, 1); // Escala de aplicación de fuerza por eje
+    [SerializeField] private float _maxAccelForceFactor = 1.0f;
 
     [Space(5)]
-    [Header("    Stun 💥")]  // Espacios para indentar
+    [Header("     Stun 💥")]    // Espacios para indentar
     [Space(5)]
-
-    [SerializeField]
-    private float _movementControlDisabledTimer = 0f; //Stun o aturdimiento
+    [SerializeField] private float _movementControlDisabledTimer = 0f; // Temporizador para deshabilitar el control de movimiento
 
     [Space(15)]
     [Header("Jump")]
     [Space(5)]
-    //Salto
-    [Tooltip("Fuerza de salto del jugador")]
-
-    [SerializeField]
-    private float upForce = 250f;
+    [Tooltip("Fuerza de salto de la Voluntad")]
+    [SerializeField] private float _upForce = 250f;
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody>();
         _groundRider = GetComponent<WillGroundRider>();
+
         if (_groundRider == null)
         {
-            Debug.LogError("GroundRider script no encontrado en el mismo GameObject que VoluntadMovement.", this);
+            Debug.LogError("WillGroundRider script no encontrado en el mismo GameObject que WillMovement.", this);
+        }
+
+        if (Camera.main != null)
+        {
+            _mainCameraTransform = Camera.main.transform;
+        }
+        else
+        {
+            Debug.LogWarning("Cámara principal no encontrada. Asegúrate de que tu cámara principal tiene la etiqueta 'MainCamera'.", this);
         }
     }
 
     private void OnEnable()
     {
-        if (_movementInputAction != null && _movementInputAction.action != null) // Buena práctica comprobar nulls
+        _movementInputAction?.action?.Enable();
+        _sprintInputAction?.action?.Enable();
+        _jumpInputAction?.action?.Enable();
+
+        if (_jumpInputAction != null && _jumpInputAction.action != null)
         {
-            _movementInputAction.action.Enable();
-        }
-        else
-        {
-            Debug.LogError("Movement Input Action Reference no está asignada o no es válida.", this);
+            _jumpInputAction.action.performed += Jump;
         }
     }
 
-    // Update is called once per frame
+    private void OnDisable()
+    {
+        _movementInputAction?.action?.Disable();
+        _sprintInputAction?.action?.Disable();
+        _jumpInputAction?.action?.Disable();
+
+        if (_jumpInputAction != null && _jumpInputAction.action != null)
+        {
+            _jumpInputAction.action.performed -= Jump;
+        }
+    }
+
     void Update()
     {
-        // Guarda el input 2D leído
-        if (_movementInputAction != null && _movementInputAction.action != null)
-        {
-            _moveDirectionInput = _movementInputAction.action.ReadValue<Vector2>();
-        }
+        _moveDirectionInput = _movementInputAction?.action?.ReadValue<Vector2>() ?? Vector2.zero;
     }
 
     private void FixedUpdate()
     {
         ProcessMovementInput(Time.fixedDeltaTime);
+        // ApplyTargetFollowForce(); // Lógica de seguimiento de la oveja eliminada por ahora.
     }
 
-    void ProcessMovementInput(float time)
+    /// <summary>
+    /// Procesa el input crudo, aplica efectos de aturdimiento y calcula la dirección de movimiento deseada.
+    /// </summary>
+    /// <param name="deltaTime">El fixedDeltaTime para las actualizaciones de física.</param>
+    void ProcessMovementInput(float deltaTime)
     {
         Vector2 currentInput = _moveDirectionInput;
 
-        // 2. Comprueba si el control está deshabilitado por el temporizador
         if (_movementControlDisabledTimer > 0f)
         {
-            currentInput = Vector2.zero; // ¡Usa Vector2.zero!
-            _movementControlDisabledTimer -= time; // ¡Usa Time.fixedDeltaTime!
+            currentInput = Vector2.zero;
+            _movementControlDisabledTimer -= deltaTime;
         }
         else
         {
-            // 3. Normaliza si la magnitud es mayor que 1
             if (currentInput.magnitude > 1.0f)
             {
                 currentInput.Normalize();
             }
 
-            // 4. Convierte el Vector2 procesado a un Vector3 para m_UnitGoal
-            //    Asumimos que el movimiento es en el plano XZ
-            //    Input X -> World X, Input Y -> World Z
-            _unitGoal = new Vector3(currentInput.x, 0f, currentInput.y);
+            _unitGoal = ConvertInputToWorldDirection(currentInput);
 
-            // --- Fin del procesamiento de la entrada ---
-
-            // Ahora llama a Moverse(), que usará el m_UnitGoal ya calculado
-            Moverse();
+            CalculateMovementForces();
         }
     }
 
-    void Moverse()
+    /// <summary>
+    /// Convierte el input 2D (WASD/Stick) en una dirección 3D en el espacio de mundo,
+    /// alineada con la orientación de la cámara (sin considerar la inclinación vertical de la cámara).
+    /// </summary>
+    /// <param name="input">El vector de input 2D crudo.</param>
+    /// <returns>La dirección 3D calculada en el espacio de mundo.</returns>
+    private Vector3 ConvertInputToWorldDirection(Vector2 input)
     {
-        //1) Calcula la dirección normalizada de la velocidad objetivo actual del script. Obtener solo la dirección (un vector de magnitud 1) es necesario para calcular el "dot product" (producto escalar) en el siguiente paso.
-        Vector3 unitVel = _velGoal.normalized;
+        if (_mainCameraTransform == null)
+        {
+            return new Vector3(input.x, 0f, input.y);
+        }
 
-        // 2) producto escalar entre la dirección del input deseado y dirección de la velocidad objetivo actual. Este valor (velDot) se usa para saber
-        // si el jugador está intentando acelerar en la misma dirección, cambiar de dirección, o ir en la dirección opuesta a la que actualmente tiene la velocidad objetivo.
-        float velDot = Vector3.Dot(_unitGoal, unitVel);
+        Vector3 cameraForward = _mainCameraTransform.forward;
+        Vector3 cameraRight = _mainCameraTransform.right;
 
-        //3) Calcula la aceleración efectiva para este paso físico.  multiplica por un factor obtenido evaluando la curva _accelerationFactorFromDot usando velDot como el "tiempo" o punto de entrada en la curva.
-        //Si velDot es -1 (input opuesto a _velGoal), el factor es 2. Aceleración = _acceleration * 2.
-        //Si velDot es 1(input igual a _velGoal), el factor es 1.Aceleración = _acceleration * 1.
-        //Si velDot es 0(input perpendicular a _velGoal), el factor es aproximadamente 1.5(dependiendo de la curva exacta).Aceleración = _acceleration * 1.5.
-        float accel = _acceleration * _accelerationFactorFromDot.Evaluate(velDot);
+        cameraForward.y = 0;
+        cameraRight.y = 0;
 
-        //4) Calcula la velocidad objetivo final que el personaje debería intentar alcanzar en este momento, basada puramente en el input del jugador.
-        //Esto te da el vector de velocidad ideal si el jugador estuviera instantáneamente a la velocidad máxima en la dirección deseada, modificada por un factor externo
-        Vector3 velGoal = _unitGoal * _maxSpeed * speedFactor;
+        cameraForward.Normalize();
+        cameraRight.Normalize();
 
-        //5) Actualiza el vector de velocidad objetivo interno
-        _velGoal = Vector3.MoveTowards(_velGoal, (velGoal) + (groundVel), accel * Time.fixedDeltaTime);
-
-        AplicarFuerza(Time.fixedDeltaTime, velDot);
-
-        //CustomLogger.Log(this, $"m_UnitGoal: {_unitGoal}, Timer: {_movementControlDisabledTimer}");
+        Vector3 worldDirection = cameraForward * input.y + cameraRight * input.x;
+        return worldDirection.normalized;
     }
 
-    void AplicarFuerza(float tiempo, float velDot)
+    /// <summary>
+    /// Calcula la velocidad objetivo y aplica las fuerzas de aceleración al Rigidbody.
+    /// </summary>
+    void CalculateMovementForces()
     {
-        Vector3 neededAccel = (_velGoal - _rb.linearVelocity) / tiempo;
+        Vector3 unitVel = _velGoal.normalized;
+        float velDot = Vector3.Dot(_unitGoal, unitVel);
+
+        float accel = _acceleration * _accelerationFactorFromDot.Evaluate(velDot);
+
+        Vector3 velGoal = _unitGoal * _maxSpeed * speedFactor;
+
+        _velGoal = Vector3.MoveTowards(_velGoal, velGoal + groundVel, accel * Time.fixedDeltaTime);
+
+        ApplyForce(_velGoal, velDot);
+    }
+
+    /// <summary>
+    /// Aplica la fuerza calculada al Rigidbody basándose en la velocidad deseada y la velocidad actual.
+    /// </summary>
+    /// <param name="desiredVelocity">La velocidad objetivo para el frame actual.</param>
+    /// <param name="velDot">Producto escalar entre la dirección de movimiento deseada y la dirección de velocidad actual.</param>
+    void ApplyForce(Vector3 desiredVelocity, float velDot)
+    {
+        Vector3 neededAccel = (desiredVelocity - _rb.linearVelocity) / Time.fixedDeltaTime;
 
         float maxAccel = _maxAccelerationForce * _maxAccelerationForceFactorFromDot.Evaluate(velDot) * _maxAccelForceFactor;
-
         neededAccel = Vector3.ClampMagnitude(neededAccel, maxAccel);
 
         _rb.AddForce(Vector3.Scale(neededAccel * _rb.mass, _forceScale));
-
-        //Realmente no pone rb.rb.linearVelocity, pone _setup.rider.rigidbody.velocity, pero he supuesto que se refiere a lo mismo, ya que en esta version no existe tampoco velocity, solo linear y angular
     }
 
-    #region Logica de salto
-    //Logica del salto
+    #region Lógica de Salto
+    /// <summary>
+    /// Aplica una fuerza de salto al Rigidbody si la Voluntad está en el suelo.
+    /// </summary>
+    /// <param name="callbackContext">Contexto del callback del Input System para la acción de salto.</param>
     public void Jump(InputAction.CallbackContext callbackContext)
     {
         if (callbackContext.performed && _groundRider != null && _groundRider.IsGrounded())
         {
-            _rb.AddForce(Vector3.up * upForce);
+            _rb.AddForce(Vector3.up * _upForce, ForceMode.Impulse);
         }
-        Debug.Log(callbackContext.phase, this.gameObject);
     }
     #endregion
 
-    #region Logica de destruccion o desactivacion
+
+
+    #region Lógica de Destrucción o Desactivación
     private void OnDestroy()
     {
-        _movementInputAction.action.Disable();
+        _movementInputAction?.action?.Disable();
+        _sprintInputAction?.action?.Disable();
+        _jumpInputAction?.action?.Disable();
+
+        if (_jumpInputAction != null && _jumpInputAction.action != null)
+        {
+            _jumpInputAction.action.performed -= Jump;
+        }
     }
 
-    private void OnDisable()
-    {
-        _movementInputAction.action.Disable();
-    }
+
     #endregion
+
+    /// <summary>
+    /// Dibuja Gizmos en el Editor para visualización constante.
+    /// </summary>
+    void OnDrawGizmos() // Cambiado de OnDrawGizmosSelected a OnDrawGizmos
+    {
+        // Si en el futuro se añade la lógica de seguimiento de la oveja,
+        // los gizmos relacionados con ella irán aquí si se desea que sean siempre visibles.
+        // Por ahora, no hay gizmos de seguimiento de oveja ya que la lógica ha sido removida.
+
+        // Ejemplo de un gizmo básico que siempre se ve:
+        // Gizmos.color = Color.magenta;
+        // Gizmos.DrawSphere(transform.position, 0.2f);
+    }
 }
