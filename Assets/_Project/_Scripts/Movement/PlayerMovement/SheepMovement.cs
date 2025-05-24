@@ -1,87 +1,84 @@
-// SheepMovement.cs
 using UnityEngine;
 
-// Requiere que el GameObject tenga un Rigidbody adjunto.
 [RequireComponent(typeof(Rigidbody))]
 public class SheepMovement : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField] private Transform _willTransform;
+    [SerializeField] private WillMovement _willMovement;
+
+    [Header("Chase Settings")]
+    [SerializeField] private float _minRadius = 2f;
+    [SerializeField] private float _maxRadius = 6f;
+    [SerializeField] private float _baseSpeedFactor = 1.0f;
+    [SerializeField] private float _sprintSpeedFactor = 1.5f;
+
+    [Header("Acceleration")]
+    [SerializeField, Range(0f, 50f)] private float _acceleration = 8f;
+    [SerializeField] private AnimationCurve _accelerationCurve = AnimationCurve.EaseInOut(-1, 0.6f, 1, 1f);
+    [SerializeField] private float _sprintAccelMultiplier = 1.5f;
+
+    [Header("Force Limit")]
+    [SerializeField, Range(0f, 200f)] private float _maxForce = 80f;
+    [SerializeField] private AnimationCurve _forceCurve = AnimationCurve.EaseInOut(-1, 0.6f, 1, 1f);
+    [SerializeField] private float _sprintForceMultiplier = 1.5f;
+    [SerializeField] private Vector3 _forceScale = new Vector3(1, 0, 1);
+
     private Rigidbody _rb;
+    private Vector3 _velGoal;
 
-    // Velocidad de movimiento básica para la oveja.
-    [SerializeField] private float _moveSpeed = 3f;
-
-    [Header("Rotation Settings")]
-    [SerializeField] private Transform _targetWillTransform; // ¡Nueva referencia al Transform de la Voluntad!
-    [SerializeField] private float _rotationSpeed = 10f; // Velocidad a la que la oveja gira para mirar a la Voluntad
-
-    void Awake()
+    private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        if (_willTransform == null)
+            Debug.LogError("SheepMovement: Assign the Will Transform.", this);
+        if (_willMovement == null)
+            Debug.LogError("SheepMovement: Assign the WillMovement reference.", this);
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        // Aplicar la rotación suavemente en FixedUpdate para consistencia física.
-        RotateTowardsWill();
-    }
+        if (_willTransform == null) return;
 
-    /// <summary>
-    /// Mueve la oveja en una dirección y a una velocidad dadas.
-    /// Esta función es llamada desde otros scripts (ej. WillMovement).
-    /// </summary>
-    /// <param name="direction">La dirección normalizada en la que se moverá la oveja.</param>
-    /// <param name="speedMultiplier">Un multiplicador opcional para ajustar la velocidad base.</param>
-    public void MoveSheep(Vector3 direction, float speedMultiplier = 1f)
-    {
-        // Asegurarse de que la dirección sea unitaria y que el movimiento sea solo en el plano XZ.
-        Vector3 flatDirection = new Vector3(direction.x, 0f, direction.z).normalized;
+        // Compute direction & distance to Will (XZ plane)
+        Vector3 offset = _willTransform.position - transform.position;
+        Vector3 dir = new Vector3(offset.x, 0f, offset.z);
+        float dist = dir.magnitude;
+        if (dist < _minRadius) return;  // Dead-zone
 
-        // Calcula la velocidad objetivo.
-        Vector3 targetVelocity = flatDirection * _moveSpeed * speedMultiplier;
+        dir.Normalize();
+        float t = Mathf.InverseLerp(_minRadius, _maxRadius, dist);
 
-        // Aplica la velocidad al Rigidbody.
-        _rb.linearVelocity = new Vector3(targetVelocity.x, _rb.linearVelocity.y, targetVelocity.z);
-    }
+        // Choose sprint or normal factors
+        bool sprint = _willMovement != null && _willMovement.IsSprinting;
+        float speedFactor = sprint ? _sprintSpeedFactor : _baseSpeedFactor;
+        float accelMul = sprint ? _sprintAccelMultiplier : 1f;
+        float forceMul = sprint ? _sprintForceMultiplier : 1f;
 
-    /// <summary>
-    /// Rota suavemente la oveja para que mire directamente a la Voluntad.
-    /// </summary>
-    private void RotateTowardsWill()
-    {
-        // Solo rotar si tenemos una referencia a la Voluntad.
-        if (_targetWillTransform == null) return;
+        // Desired velocity vector
+        Vector3 desiredVelocity = dir * (_acceleration * t * speedFactor);
 
-        // Calculamos la dirección desde la posición actual de la oveja hacia la posición de la Voluntad.
-        // Aplanamos el vector en Y para que la oveja no "incline" su cabeza hacia arriba o abajo,
-        // solo gire en el plano horizontal.
-        Vector3 directionToWill = (_targetWillTransform.position - transform.position);
-        directionToWill.y = 0; // Importante: aplanar la dirección para rotación horizontal
+        // Compute acceleration toward desired vel
+        float dot = Vector3.Dot(_rb.linearVelocity.normalized, dir);
+        float accel = _acceleration * accelMul * _accelerationCurve.Evaluate(dot);
+        _velGoal = Vector3.MoveTowards(_velGoal, desiredVelocity, accel * Time.fixedDeltaTime);
 
-        // Si la dirección es muy pequeña (están casi en el mismo lugar), no rotar.
-        if (directionToWill.magnitude < 0.01f) return;
+        // Compute needed accel and clamp to max force
+        Vector3 neededAccel = (_velGoal - _rb.linearVelocity) / Time.fixedDeltaTime;
+        float maxF = _maxForce * forceMul * _forceCurve.Evaluate(dot);
+        neededAccel = Vector3.ClampMagnitude(neededAccel, maxF);
 
-        // Normalizamos la dirección para obtener un vector unitario.
-        directionToWill.Normalize();
+        // Apply force to sheep Rigidbody
+        Vector3 force = Vector3.Scale(neededAccel * _rb.mass, _forceScale);
+        _rb.AddForce(force);
 
-        // Calcula la rotación necesaria para mirar hacia esa dirección.
-        // Vector3.up asegura que la oveja se mantenga "erguida".
-        Quaternion targetRotation = Quaternion.LookRotation(directionToWill, Vector3.up);
-
-        // Interpola suavemente la rotación actual del Rigidbody hacia la rotación objetivo.
-        _rb.rotation = Quaternion.Slerp(_rb.rotation, targetRotation, _rotationSpeed * Time.fixedDeltaTime);
-    }
-
-    /// <summary>
-    /// Dibuja gizmos para la depuración en el Editor.
-    /// </summary>
-    void OnDrawGizmos()
-    {
-        // Dibuja una línea de la oveja a la Voluntad para visualizar la dirección de mirada.
-        if (_targetWillTransform != null)
+        // Optional: rotate sheep toward Will
+        if (dir.sqrMagnitude > 0.01f)
         {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, _targetWillTransform.position);
-            Gizmos.DrawSphere(_targetWillTransform.position, 0.1f); // Marca la posición de la voluntad
+            Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
+            _rb.MoveRotation(Quaternion.Slerp(_rb.rotation, targetRot, 5f * Time.fixedDeltaTime));
         }
     }
 }
+
+
