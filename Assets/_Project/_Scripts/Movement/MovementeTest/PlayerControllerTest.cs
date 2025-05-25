@@ -6,8 +6,7 @@ public class PlayerControllerTest : MonoBehaviour
 {
     [Header("Control Movimiento")]
     public float moveSpeed = 30f;
-    public float walkSpeed = 30f;
-    public float sprintSpeed = 50f;
+    float saveSpeed;
     public float rotationSpeed = 720f;
 
     private Rigidbody rb;
@@ -20,6 +19,7 @@ public class PlayerControllerTest : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         
         animator = GetComponent<Animator>();
+        saveSpeed = moveSpeed;
     }
 
     void Update()
@@ -37,12 +37,12 @@ public class PlayerControllerTest : MonoBehaviour
             if (run)
             {
                 animator.SetBool("Run", true);
-                moveSpeed = sprintSpeed;
+                moveSpeed = saveSpeed*3;
             }
             else
             {
                 animator.SetBool("Run", false);
-                moveSpeed = walkSpeed;
+                moveSpeed = saveSpeed;
             }
 
             animator.SetFloat("XSpeed", h);
@@ -57,7 +57,7 @@ public class PlayerControllerTest : MonoBehaviour
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         if (stateInfo.IsName("Walk Tree") || stateInfo.IsName("Run Tree"))
         {
-            // Dirección de movimiento en base al input
+            // Direcciï¿½n de movimiento en base al input
             inputDirection = new Vector3(h, 0, v).normalized;
         }
         else inputDirection = new Vector3(0, 0, 0);
@@ -68,16 +68,16 @@ public class PlayerControllerTest : MonoBehaviour
         // Mover al personaje
         if (inputDirection.magnitude > 0.1f)
         {
-            // Movimiento en dirección local
+            // Movimiento en direcciï¿½n local
             Vector3 moveDir = Camera.main.transform.TransformDirection(inputDirection);
             moveDir.y = 0f;
             moveDir.Normalize();
 
-            // --- Nuevo bloque: ajustar según pendiente ---
+            // --- Nuevo bloque: ajustar segï¿½n pendiente ---
             RaycastHit hit;
             if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out hit, 2f))
             {
-                // Proyectar la dirección sobre el plano del suelo
+                // Proyectar la direcciï¿½n sobre el plano del suelo
                 moveDir = Vector3.ProjectOnPlane(moveDir, hit.normal).normalized;
             }
             // ------------------------------------------------
@@ -85,7 +85,7 @@ public class PlayerControllerTest : MonoBehaviour
             Vector3 moveVelocity = moveDir * moveSpeed;
             rb.MovePosition(rb.position + moveVelocity * Time.fixedDeltaTime);
 
-            // Rotar suavemente hacia la dirección de movimiento
+            // Rotar suavemente hacia la direcciï¿½n de movimiento
             Quaternion targetRotation;
             if (inputDirection.z < 0f)
                 targetRotation = Quaternion.LookRotation(moveDir * -1);

@@ -30,8 +30,9 @@ public class MapCreator : MonoBehaviour
     public int randomizeSice = 4;
     public int oneBetween = 50;
 
-    public GameObject wall;
-    public GameObject floor;
+    public GameObject[] forests;
+    public GameObject[] farForests;
+    public GameObject[] floors;
     public GameObject enemy;
 
     int xSize, ySize, zSize;
@@ -88,7 +89,7 @@ public class MapCreator : MonoBehaviour
             for (int x = 0; x < xSize; x++)
             {
                 map[y][x] = new int[zSize];
-                map[y][x][0] = 1;
+                map[y][x][0] = 3;
                 //map[y][x][1] = 1;
             }
         }
@@ -206,6 +207,9 @@ public class MapCreator : MonoBehaviour
                             dataMap[(int)pos.y + aI][(int)pos.x + aJ] = -1;
                         }
 
+                /*map[(int)pos.y][(int)pos.x][0] = 0;
+                dataMap[(int)pos.y][(int)pos.x] = -1;*/
+
                 //recorrido += pos.x + " " + pos.y + " / ";
 
                 pos = Vector2.MoveTowards(pos, goal, 1);
@@ -223,12 +227,15 @@ public class MapCreator : MonoBehaviour
                     {
                         map[(int)pos.y + aI][(int)pos.x + aJ][0] = 0;
                         dataMap[(int)pos.y + aI][(int)pos.x + aJ] = -1;
-                    }                        
+                    }
+
+            /*map[(int)pos.y][(int)pos.x][0] = 0;
+            dataMap[(int)pos.y][(int)pos.x] = -1;*/
 
             //recorrido += pos.x + " " + pos.y + " / ";
 
             pos = Vector2.MoveTowards(pos, end, 1);
-        }
+        }        
 
         int index = 0;
         foreach (Room room in rooms)
@@ -263,6 +270,24 @@ public class MapCreator : MonoBehaviour
             }
             index++;
         }
+
+        for (int j = 0; j < ySize; j++)
+            for (int i = 0; i < xSize; i++)
+            {
+                if (map[j][i][0] == 0 || map[j][i][0] == 2)
+                {
+                    for (int aJ = -1; aJ < 2; aJ++)
+                        for (int aI = -1; aI < 2; aI++)
+                        {
+                            if (j + aJ >= 0 && j + aJ < ySize && i + aI >= 0 && i + aI < xSize)
+                                if (map[j + aJ][i + aI][0] == 3)
+                                {
+                                    map[j + aJ][i + aI][0] = 1;
+                                    //Debug.Log("Uno");
+                                }
+                        }
+                }
+            }
     }
 
     void PrintMap()         //Recorre el mapa para pintarlo por consola
@@ -299,19 +324,28 @@ public class MapCreator : MonoBehaviour
         {
             for (int x = 0; x < xSize; x++)
             {
-                Vector3 position = new Vector3(y * wall.transform.localScale.x, 0, x * wall.transform.localScale.z); // Posiciona en el mundo
+                Vector3 position = new Vector3(y * forests[0].transform.localScale.x, 0, x * forests[0].transform.localScale.z); // Posiciona en el mundo
 
                 GameObject obj;
                 GameObject ene;
 
+                int rand;
+
                 if (map[y][x][0] == 1)
                 {
-                    obj = Instantiate(wall, position + new Vector3(0, -0.4f, 0), Quaternion.identity);
+                    rand = UnityEngine.Random.Range(0, forests.Length);
+                    obj = Instantiate(forests[rand], position + new Vector3(0, -0.4f, 0), Quaternion.identity);
                     dataMap[y][x] = -2;
                 }
-                else
+                else if (map[y][x][0] == 3)
                 {
-                    obj = Instantiate(floor, position + new Vector3(0, -0.4f, 0), Quaternion.identity);
+                    rand = UnityEngine.Random.Range(0, forests.Length);
+                    obj = Instantiate(farForests[rand], position + new Vector3(0, -0.4f, 0), Quaternion.identity);
+                }
+                else 
+                {
+                    rand = UnityEngine.Random.Range(0, floors.Length);
+                    obj = Instantiate(floors[rand], position + new Vector3(0, -0.4f, 0), Quaternion.identity);
 
                     if (map[y][x][0] == 2)
                     {

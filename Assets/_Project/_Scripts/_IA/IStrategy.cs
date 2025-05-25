@@ -45,7 +45,7 @@ namespace BehaviourTrees
         public Node.Status Process() => predicate() ? Node.Status.Succsess : Node.Status.Failure;
     }
 
-    // WOLF STRATEGIES
+    // WOLF AND CROW SHARE STRATEGIES
     public class PatrolStrategy : IStrategy
     {
         readonly Transform entity;
