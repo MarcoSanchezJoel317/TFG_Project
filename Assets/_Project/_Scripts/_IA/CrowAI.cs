@@ -11,6 +11,16 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class CrowAI : MonoBehaviour
 {
+    [Header("General Setting")]
+    [SerializeField] float speed = 2;
+    [SerializeField] float runningSpeed = 10;
+
+    [Header("Vision Settings")]
+    [SerializeField] float maxDistance = 100f;
+    [SerializeField] float horizontalFOV = 120f;
+    [SerializeField] float verticalFOV = 120f;
+
+
     [Header("AI Settings")]
     [SerializeField] List<Transform> wayPoints = new();
     GameObject player;
@@ -19,33 +29,19 @@ public class CrowAI : MonoBehaviour
     Vector3 initialPos;
     internal NavMeshAgent agent;
     BehaviourTree tree;
-    Node.Status callBack = Node.Status.Failure;
-
-    /*[Header("Raycast Settings")]
-    [SerializeField] float coneAngle = 120f;           // Ángulo del cono
-    [SerializeField] float detectionDistance = 100f;   // Distancia máxima del raycast
-    [SerializeField] int rayCount = 50;                // Número de raycasts*/
-
-    [Header("Vision Settings")]
-    [SerializeField] float maxDistance = 100f;
-    [SerializeField] float horizontalFOV = 120f;
-    [SerializeField] float verticalFOV = 120f;
+    Node.Status callBack = Node.Status.Failure;    
 
     [Header("Patrol")]
     [SerializeField] float areaRadius = 100f;
     [SerializeField] float lookAroundSpeed = 90f; // grados por segundo
 
-    [Header("Animation and Visuals")]
-    Animator animator;
-    float raycastDistance = 2f;
-    LayerMask groundMask = Physics.DefaultRaycastLayers;
-    float alignSpeed = 10f; // velocidad de interpolación
-
+    [Header("Surrounding Setting")]
+    [SerializeField] float radius;
+    [SerializeField] float rotationSpeed = 100f;
 
     private void Awake()
     {
         player = GameObject.FindWithTag("Player");
-        animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         initialPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 
@@ -58,7 +54,8 @@ public class CrowAI : MonoBehaviour
 
         Secuence detectAndPersecute = new Secuence("DetectAndPersecute", 10);
         detectAndPersecute.AddChild(new Leaf("PlayerDetected", new Condition(() => detected)));
-        detectAndPersecute.AddChild(new Leaf("Persecute", new ActionStrategy(() => agent.SetDestination(player.transform.position))));
+        detectAndPersecute.AddChild(new Leaf("SurroundPlayer", new SurroundTargetStrategy(transform, agent, player.transform, radius, rotationSpeed)));
+        //detectAndPersecute.AddChild(new Leaf("Persecute", new ActionStrategy(() => agent.SetDestination(player.transform.position))));
 
         Secuence lookAround = new Secuence("LookAround", 5);
         lookAround.AddChild(new Leaf("HearSomething", new Condition(() => hear)));
@@ -80,54 +77,12 @@ public class CrowAI : MonoBehaviour
         hear = IsHearing();
 
         if (detected)
-            agent.speed = 10;
-        else agent.speed = 2;
+            agent.speed = runningSpeed;
+        else agent.speed = speed;
 
         // Inicio del árbol de decisiones
         callBack = tree.Process();            
     }
-
-    /*void DetectPlayer()
-    {
-        float halfAngle = coneAngle / 2f;
-
-        for (int i = 0; i < rayCount; i++)
-        {
-            // Interpolamos un ángulo entre -halfAngle y +halfAngle
-            float angle = Mathf.Lerp(-halfAngle, halfAngle, i / (float)(rayCount - 1));
-
-            // Calculamos dirección del raycast en base al ángulo local
-            Vector3 direction = Quaternion.Euler(0, angle, 0) * transform.forward;
-
-            // Dibujamos el raycast en el editor (debug visual)
-            Debug.DrawRay(transform.position, direction * detectionDistance, Color.red);
-
-            if (Physics.Raycast(transform.position, direction, out RaycastHit hit, detectionDistance))
-            {
-                if (hit.collider.CompareTag("Player"))
-                {
-                    detected = true;
-                    Debug.Log("Player detectado a " + hit.distance + " unidades.");
-                    // Aquí podrías hacer algo, como atacar, perseguir, etc.
-                }
-            }
-        }        
-    }*/
-
-    /*private Vector3 GetPositionInArea()
-    {
-        Vector3 objective = new Vector3(lastPos.x, 0, lastPos.z);
-        Vector3 position = new Vector3(transform.position.x, 0, transform.position.z);
-        if ((objective - position).magnitude < 10f)
-        {
-            float x = UnityEngine.Random.Range(-areaRadius, areaRadius);
-            float z = UnityEngine.Random.Range(-areaRadius, areaRadius);
-
-            lastPos = initialPos + new Vector3(x, 0, z);
-            return initialPos + lastPos;
-        }
-        return lastPos;
-    }*/
 
     private bool IsDetected(Transform target)
     {

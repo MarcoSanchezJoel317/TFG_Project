@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace BehaviourTrees
 {
@@ -16,7 +17,7 @@ namespace BehaviourTrees
         }
     }
 
-    // LOGIC STRATEGIES
+    // ESTRATÉGIAS LÓGICAS
     public class ActionStrategy : IStrategy
     {
         readonly Action doSomething;
@@ -45,7 +46,25 @@ namespace BehaviourTrees
         public Node.Status Process() => predicate() ? Node.Status.Succsess : Node.Status.Failure;
     }
 
-    // WOLF AND CROW SHARE STRATEGIES
+    public class ConidtionatedActionStrategy : IStrategy
+    {
+        readonly Action doSomething;
+        readonly Func<bool> predicate;
+
+        public ConidtionatedActionStrategy(Action doSomething, Func<bool> predicate)
+        { 
+            this.doSomething = doSomething; 
+            this.predicate = predicate; 
+        }
+
+        public Node.Status Process()
+        {
+            if (predicate()) doSomething();
+            return Node.Status.Succsess;
+        }
+    }
+
+    // ESTRETÉGIAS COMPARTIDAS
     public class PatrolStrategy : IStrategy
     {
         readonly Transform entity;
@@ -53,7 +72,7 @@ namespace BehaviourTrees
         readonly List<Transform> patrolPoints;
         readonly float patrolSpeed;
         int courrentIndex;
-        bool isPathCalpulated;
+        bool isPathCalculated;
 
         public PatrolStrategy(Transform entity, NavMeshAgent agent, List<Transform> patrolPoints, float patrolSpeed = 200f)
         {
@@ -71,14 +90,14 @@ namespace BehaviourTrees
             agent.SetDestination(target.position);
             entity.LookAt(target);
 
-            if (isPathCalpulated && agent.remainingDistance < 0.1f)
+            if (isPathCalculated && agent.remainingDistance < 0.1f)
             {
                 courrentIndex++;
-                isPathCalpulated = false;
+                isPathCalculated = false;
             }
             if (agent.pathPending)
             {
-                isPathCalpulated = true;
+                isPathCalculated = true;
             }
 
             return Node.Status.Running;
@@ -182,6 +201,51 @@ namespace BehaviourTrees
         {
             totalAngle = 0;
             stage = 0;
+        }
+    }
+
+    // ESTRATÉGIAS CUERVO
+
+    public class SurroundTargetStrategy : IStrategy
+    {
+        readonly Transform entity;
+        readonly NavMeshAgent agent;
+        readonly Transform playerTransform;
+        readonly float radius;
+        readonly float rotationSpeed;
+        float courrentPercent;
+        float actualAngle;
+
+        public SurroundTargetStrategy(Transform entity, NavMeshAgent agent, Transform playerTransform, float radius, float rotationSpeed)
+        {
+            this.entity = entity;
+            this.agent = agent;
+            this.playerTransform = playerTransform;
+            this.radius = radius;
+            this.rotationSpeed = rotationSpeed;
+        }
+
+        public Node.Status Process()
+        {
+            if (courrentPercent <= 0) return Node.Status.Succsess;
+
+            Vector3 offset = Quaternion.Euler(0, actualAngle, 0) * Vector3.forward * (radius * courrentPercent);
+            Vector3 target = playerTransform.position + offset;
+
+            agent.SetDestination(target);
+
+            Vector3 lookPos = playerTransform.position - entity.position;
+            lookPos.y = 0f; // evitar mirar hacia arriba o abajo
+
+            actualAngle += rotationSpeed * Time.deltaTime;
+            if (actualAngle >= 360f) actualAngle -= 360f;
+
+            return Node.Status.Running;
+        }
+        public void Reset()
+        {
+            courrentPercent = 1;
+            actualAngle = 0;
         }
     }
 
