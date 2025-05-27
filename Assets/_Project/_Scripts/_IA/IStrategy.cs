@@ -59,7 +59,7 @@ namespace BehaviourTrees
 
         public Node.Status Process()
         {
-            Debug.Log(predicate());
+            //Debug.Log(predicate());
             if (predicate()) doSomething();
             
             return Node.Status.Succsess;
