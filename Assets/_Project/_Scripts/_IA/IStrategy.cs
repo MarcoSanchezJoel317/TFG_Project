@@ -59,7 +59,9 @@ namespace BehaviourTrees
 
         public Node.Status Process()
         {
+            Debug.Log(predicate());
             if (predicate()) doSomething();
+            
             return Node.Status.Succsess;
         }
     }
@@ -134,7 +136,7 @@ namespace BehaviourTrees
                 z = UnityEngine.Random.Range(-areaRadius, areaRadius);
                 destination = initialPos + new Vector3(x, 0, z);
                 agent.SetDestination(destination);
-                entity.LookAt(destination);
+                //entity.LookAt(destination);
             }
             else return Node.Status.Succsess;
 
@@ -213,21 +215,23 @@ namespace BehaviourTrees
         readonly Transform playerTransform;
         readonly float radius;
         readonly float rotationSpeed;
+        readonly float vision;
         float courrentPercent;
         float actualAngle;
 
-        public SurroundTargetStrategy(Transform entity, NavMeshAgent agent, Transform playerTransform, float radius, float rotationSpeed)
+        public SurroundTargetStrategy(Transform entity, NavMeshAgent agent, Transform playerTransform, float radius, float rotationSpeed, float vision)
         {
             this.entity = entity;
             this.agent = agent;
             this.playerTransform = playerTransform;
             this.radius = radius;
             this.rotationSpeed = rotationSpeed;
+            this.vision = vision;
         }
 
         public Node.Status Process()
         {
-            if (courrentPercent <= 0) return Node.Status.Succsess;
+            if ((entity.position - playerTransform.position).magnitude >= vision) return Node.Status.Succsess;
 
             Vector3 offset = Quaternion.Euler(0, actualAngle, 0) * Vector3.forward * (radius * courrentPercent);
             Vector3 target = playerTransform.position + offset;

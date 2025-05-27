@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using IAManager;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -11,10 +12,15 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class WolfAI : MonoBehaviour
 {
+    [Header("General Setting")]
+    [SerializeField] float speed = 2;
+    [SerializeField] float runningSpeed = 10;
+
     [Header("AI Settings")]
     [SerializeField] List<Transform> wayPoints = new();
     GameObject player;
     internal bool detected = false;
+    internal bool alarm = false;
     bool hear = false;
     Vector3 initialPos;
     internal NavMeshAgent agent;
@@ -49,7 +55,7 @@ public class WolfAI : MonoBehaviour
 
         tree = new BehaviourTree("WolfAI");
 
-        // [[[Selector de comportamiento]]]
+        // [[[Selector de comportamiento general]]]
         PrioritySelector actions = new PrioritySelector("Actions");
 
         // [[Comportamiento detección jugador]]
@@ -81,6 +87,7 @@ public class WolfAI : MonoBehaviour
 
         Leaf wander = new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius), 0);
 
+        // [[[Contrucción del arbol final]]]
         actions.AddChild(detectAndPersecute);
         //actions.AddChild(lookAround);
         actions.AddChild(wander);
@@ -95,10 +102,10 @@ public class WolfAI : MonoBehaviour
         hear = IsHearing();
 
         if (detected)
-            agent.speed = 10;
+            agent.speed = runningSpeed;
         else
         {
-            agent.speed = 2;
+            agent.speed = speed;
             if (imAlpha)
                 packManager.ResetPack();
             else
@@ -116,7 +123,7 @@ public class WolfAI : MonoBehaviour
         Vector3 directionToTarget = end - start;
 
         // Rechazamos por distancia
-        if (directionToTarget.magnitude > maxDistance)
+        if (!alarm && directionToTarget.magnitude > maxDistance)
             return false;        
 
         if (!detected)

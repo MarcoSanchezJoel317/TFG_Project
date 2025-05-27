@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using IAManager;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -30,6 +31,7 @@ public class CrowAI : MonoBehaviour
     internal NavMeshAgent agent;
     BehaviourTree tree;
     Node.Status callBack = Node.Status.Failure;    
+    CrowAlarmManager alarmManager;
 
     [Header("Patrol")]
     [SerializeField] float areaRadius = 100f;
@@ -42,27 +44,33 @@ public class CrowAI : MonoBehaviour
     private void Awake()
     {
         player = GameObject.FindWithTag("Player");
+        alarmManager = GameObject.FindWithTag("Manager").GetComponent<CrowAlarmManager>();
         agent = GetComponent<NavMeshAgent>();
         initialPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 
         agent.updateUpAxis = false;
         agent.updateRotation = true;
 
+        // [[[[ ARBOL DE DECISIONES CCUERVO ]]]] 
+
         tree = new BehaviourTree("CrowAI");
 
+        // [[[Selector de comportamiento general]]]
         PrioritySelector actions = new PrioritySelector("Actions");
 
+        // [[Comportamiento detección jugador]]
         Secuence detectAndPersecute = new Secuence("DetectAndPersecute", 10);
         detectAndPersecute.AddChild(new Leaf("PlayerDetected", new Condition(() => detected)));
-        detectAndPersecute.AddChild(new Leaf("SurroundPlayer", new SurroundTargetStrategy(transform, agent, player.transform, radius, rotationSpeed)));
-        //detectAndPersecute.AddChild(new Leaf("Persecute", new ActionStrategy(() => agent.SetDestination(player.transform.position))));
+        detectAndPersecute.AddChild(new Leaf("SurroundPlayer", new SurroundTargetStrategy(transform, agent, player.transform, radius, rotationSpeed, maxDistance)));
 
+        // [[Comportamiento búsqueda jugador]]
         Secuence lookAround = new Secuence("LookAround", 5);
         lookAround.AddChild(new Leaf("HearSomething", new Condition(() => hear)));
         lookAround.AddChild(new Leaf("TurnAround", new TurnAroundStrategy(transform, agent, lookAroundSpeed)));
 
         Leaf wander = new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius), 0);
 
+        // [[[Contrucción del arbol final]]]
         actions.AddChild(detectAndPersecute);
         actions.AddChild(lookAround);
         actions.AddChild(wander);
@@ -78,7 +86,10 @@ public class CrowAI : MonoBehaviour
 
         if (detected)
             agent.speed = runningSpeed;
-        else agent.speed = speed;
+        else
+        {
+            agent.speed = speed;
+        }
 
         // Inicio del árbol de decisiones
         callBack = tree.Process();            
@@ -86,7 +97,7 @@ public class CrowAI : MonoBehaviour
 
     private bool IsDetected(Transform target)
     {
-        Vector3 start = transform.position + Vector3.up;
+        Vector3 start = transform.position + Vector3.up * 6;
         Vector3 end = player.transform.position + Vector3.up;
         Vector3 directionToTarget = end - start;
 

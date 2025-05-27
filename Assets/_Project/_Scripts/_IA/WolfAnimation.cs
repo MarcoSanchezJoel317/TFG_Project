@@ -38,7 +38,7 @@ public class WolfAnimation : MonoBehaviour
         if (wolfAI.detected)
         {
             animator.SetBool("Run", true);
-            if (wolfAI.agent.remainingDistance < 5f)
+            if (wolfAI.agent.remainingDistance < 3f)
                 valueY = -1;
         }
         else{
