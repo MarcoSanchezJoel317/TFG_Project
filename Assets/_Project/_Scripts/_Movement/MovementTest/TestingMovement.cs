@@ -5,7 +5,6 @@ using static UnityEngine.InputSystem.InputAction;
 
 // Controla el movimiento físico de la Voluntad basado en el input del jugador y la orientación de la cámara.
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(WillGroundRider))] // Asegura que el GroundRider esté presente
 public class TestingMovement : MonoBehaviour
 {
     private Rigidbody _rb;
@@ -69,10 +68,7 @@ public class TestingMovement : MonoBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
-        if (!TryGetComponent<WillGroundRider>(out _groundRider))
-        {
-            Debug.LogError("WillGroundRider no encontrado en " + name, this);
-        }
+        
 
         if ((_mainCameraTransform = Camera.main?.transform) == null)
         {
