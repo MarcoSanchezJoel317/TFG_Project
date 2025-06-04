@@ -14828,7 +14828,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _maxAccelerationForce: 80
+  _maxAccelerationForce: 60
   _maxAccelerationForceFactorFromDot:
     serializedVersion: 2
     m_Curve:
