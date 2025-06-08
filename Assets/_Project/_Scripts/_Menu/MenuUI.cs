@@ -50,4 +50,9 @@ public class MenuUI : MonoBehaviour
         }
     }
 
+    public void EnlaceTemporal()
+    {
+        Application.OpenURL("https://albaro.dev/");
+    }
+
 }
