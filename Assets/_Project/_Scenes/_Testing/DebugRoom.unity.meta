@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/_Project/_Scenes/_Testing/DebugRoom.unity.meta
 guid: 750fc46bef214a542bfbb9affd333222
+========
+guid: 2c764c465095c1e409877f80fe4fd5ac
+>>>>>>>> Joel:Assets/_Project/_Scenes/_Scenarios/ProceduralMap/AutoPath_V0.1.0.unity.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

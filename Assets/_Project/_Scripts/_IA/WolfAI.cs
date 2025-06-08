@@ -1,4 +1,5 @@
 using BehaviourTrees;
+using IAManager;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -11,20 +12,20 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class WolfAI : MonoBehaviour
 {
+    [Header("General Setting")]
+    [SerializeField] float speed = 2;
+    [SerializeField] float runningSpeed = 10;
+
     [Header("AI Settings")]
     [SerializeField] List<Transform> wayPoints = new();
     GameObject player;
     internal bool detected = false;
+    internal bool alarm = false;
     bool hear = false;
     Vector3 initialPos;
     internal NavMeshAgent agent;
     BehaviourTree tree;
     Node.Status callBack = Node.Status.Failure;
-
-    /*[Header("Raycast Settings")]
-    [SerializeField] float coneAngle = 120f;           // Ángulo del cono
-    [SerializeField] float detectionDistance = 100f;   // Distancia máxima del raycast
-    [SerializeField] int rayCount = 50;                // Número de raycasts*/
 
     [Header("Vision Settings")]
     [SerializeField] float maxDistance = 100f;
@@ -35,39 +36,60 @@ public class WolfAI : MonoBehaviour
     [SerializeField] float areaRadius = 100f;
     [SerializeField] float lookAroundSpeed = 90f; // grados por segundo
 
-    [Header("Animation and Visuals")]
-    Animator animator;
-    float raycastDistance = 2f;
-    LayerMask groundMask = Physics.DefaultRaycastLayers;
-    float alignSpeed = 10f; // velocidad de interpolación
-
+    [Header("Pack Info")]
+    private WolfPackManager packManager;
+    internal Vector3 posInPack = Vector3.one;
+    internal bool imAlpha = false;
 
     private void Awake()
     {
         player = GameObject.FindWithTag("Player");
-        animator = GetComponent<Animator>();
+        packManager = GameObject.FindWithTag("Manager").GetComponent<WolfPackManager>();
         agent = GetComponent<NavMeshAgent>();
         initialPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 
         agent.updateUpAxis = false;
         agent.updateRotation = true;
 
+        // [[[[ ARBOL DE DECISIONES LOBO ]]]] 
+
         tree = new BehaviourTree("WolfAI");
 
+        // [[[Selector de comportamiento general]]]
         PrioritySelector actions = new PrioritySelector("Actions");
 
+        // [[Comportamiento detección jugador]]
         Secuence detectAndPersecute = new Secuence("DetectAndPersecute", 10);
         detectAndPersecute.AddChild(new Leaf("PlayerDetected", new Condition(() => detected)));
-        detectAndPersecute.AddChild(new Leaf("Persecute", new ActionStrategy(() => agent.SetDestination(player.transform.position))));
+        detectAndPersecute.AddChild(new Leaf("LookPack", new ConidtionatedActionStrategy(() => packManager.AddWolftoPack(gameObject), () => !packManager.pack.Contains(gameObject))));
 
+        // [Selector comportamiento en detección]
+        PrioritySelector packBehaviour = new PrioritySelector("PackBehaviour");
+
+        Secuence directAttack = new Secuence("directAttack", 10);
+        directAttack.AddChild(new Leaf("IsNear", new Condition(() => (player.transform.position - transform.position).magnitude < 5)));
+        directAttack.AddChild(new Leaf("Persecute", new ActionStrategy(() => agent.SetDestination(player.transform.position))));
+
+        Secuence ifAlpha = new Secuence("IfAlpha", 5);
+        ifAlpha.AddChild(new Leaf("ImAlpha", new Condition(() => imAlpha)));
+        ifAlpha.AddChild(new Leaf("AlphaPersecute", new ActionStrategy(() => agent.SetDestination(player.transform.position))));
+
+        packBehaviour.AddChild(directAttack);
+        packBehaviour.AddChild(ifAlpha);
+        packBehaviour.AddChild(new Leaf("GoToPack", new ActionStrategy(() => agent.SetDestination(posInPack))));
+
+        detectAndPersecute.AddChild(packBehaviour);
+
+        // [[Comportamiento búsqueda jugador]]
         Secuence lookAround = new Secuence("LookAround", 5);
         lookAround.AddChild(new Leaf("HearSomething", new Condition(() => hear)));
         lookAround.AddChild(new Leaf("TurnAround", new TurnAroundStrategy(transform, agent, lookAroundSpeed)));
 
         Leaf wander = new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius), 0);
 
+        // [[[Contrucción del arbol final]]]
         actions.AddChild(detectAndPersecute);
-        actions.AddChild(lookAround);
+        //actions.AddChild(lookAround);
         actions.AddChild(wander);
 
         tree.AddChild(actions);
@@ -80,54 +102,19 @@ public class WolfAI : MonoBehaviour
         hear = IsHearing();
 
         if (detected)
-            agent.speed = 10;
-        else agent.speed = 2;
+            agent.speed = runningSpeed;
+        else
+        {
+            agent.speed = speed;
+            if (imAlpha)
+                packManager.ResetPack();
+            else
+                packManager.RemoveWolf(gameObject);
+        }
 
         // Inicio del árbol de decisiones
         callBack = tree.Process();            
     }
-
-    /*void DetectPlayer()
-    {
-        float halfAngle = coneAngle / 2f;
-
-        for (int i = 0; i < rayCount; i++)
-        {
-            // Interpolamos un ángulo entre -halfAngle y +halfAngle
-            float angle = Mathf.Lerp(-halfAngle, halfAngle, i / (float)(rayCount - 1));
-
-            // Calculamos dirección del raycast en base al ángulo local
-            Vector3 direction = Quaternion.Euler(0, angle, 0) * transform.forward;
-
-            // Dibujamos el raycast en el editor (debug visual)
-            Debug.DrawRay(transform.position, direction * detectionDistance, Color.red);
-
-            if (Physics.Raycast(transform.position, direction, out RaycastHit hit, detectionDistance))
-            {
-                if (hit.collider.CompareTag("Player"))
-                {
-                    detected = true;
-                    Debug.Log("Player detectado a " + hit.distance + " unidades.");
-                    // Aquí podrías hacer algo, como atacar, perseguir, etc.
-                }
-            }
-        }        
-    }*/
-
-    /*private Vector3 GetPositionInArea()
-    {
-        Vector3 objective = new Vector3(lastPos.x, 0, lastPos.z);
-        Vector3 position = new Vector3(transform.position.x, 0, transform.position.z);
-        if ((objective - position).magnitude < 10f)
-        {
-            float x = UnityEngine.Random.Range(-areaRadius, areaRadius);
-            float z = UnityEngine.Random.Range(-areaRadius, areaRadius);
-
-            lastPos = initialPos + new Vector3(x, 0, z);
-            return initialPos + lastPos;
-        }
-        return lastPos;
-    }*/
 
     private bool IsDetected(Transform target)
     {
@@ -136,7 +123,7 @@ public class WolfAI : MonoBehaviour
         Vector3 directionToTarget = end - start;
 
         // Rechazamos por distancia
-        if (directionToTarget.magnitude > maxDistance)
+        if (!alarm && directionToTarget.magnitude > maxDistance)
             return false;        
 
         if (!detected)
@@ -167,4 +154,5 @@ public class WolfAI : MonoBehaviour
         if ((player.transform.position - transform.position).magnitude < maxDistance) return true;
         return false;
     }
+
 }

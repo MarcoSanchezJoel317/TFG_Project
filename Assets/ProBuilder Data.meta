@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/ProBuilder Data.meta
 guid: c728115dc5601c04fb40b97a0ab53a3e
+========
+guid: 31259b57b1a431749afae42839685a64
+>>>>>>>> Joel:Assets/_Project/_Art/Animation.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

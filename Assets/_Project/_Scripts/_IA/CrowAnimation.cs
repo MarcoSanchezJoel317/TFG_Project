@@ -24,13 +24,13 @@ public class CrowAnimation : MonoBehaviour
     {
         if (crowAI.detected)
         {
-            animator.SetBool("Attacking", true);
+            //animator.SetBool("Attacking", true);
             if (crowAI.agent.remainingDistance < 5f)
                 ChangeAltitude(minAltitude);
         }
         else if (animator.GetBool("Attacking"))
         {
-            animator.SetBool("Attacking", false);
+            //animator.SetBool("Attacking", false);
             ChangeAltitude(maxAltitude);
         }
     }
