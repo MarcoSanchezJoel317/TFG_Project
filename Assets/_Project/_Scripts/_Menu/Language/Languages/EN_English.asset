@@ -20,11 +20,37 @@ MonoBehaviour:
     value: Start
   - key: 2
     value: Exit
+  - key: 3
+    value: New Game
+  - key: 4
+    value: Load Game
   - key: 5
-    value: Sound
+    value: Return
+  - key: 6
+    value: Resume
+  - key: 7
+    value: Return to Menu
+  - key: 8
+    value: Exit to Desktop
   - key: 9
+    value: Sound
+  - key: 10
     value: Graphics
   - key: 11
-    value: Return to menu
-  - key: 10
     value: Game
+  - key: 12
+    value: Return to Menu
+  - key: 13
+    value: Master Volume
+  - key: 14
+    value: 'Music Volume '
+  - key: 15
+    value: SFX Volume
+  - key: 16
+    value: Work in progress
+  - key: 17
+    value: Work in progress
+  - key: 18
+    value: Game Language
+  - key: 19
+    value: Game controller Connected
