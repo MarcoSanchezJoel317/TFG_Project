@@ -59,18 +59,18 @@ public class WolfAI : MonoBehaviour
         PrioritySelector actions = new PrioritySelector("Actions");
 
         // [[Comportamiento detección jugador]]
-        Secuence detectAndPersecute = new Secuence("DetectAndPersecute", 10);
+        BehaviourTrees.Sequence detectAndPersecute = new BehaviourTrees.Sequence("DetectAndPersecute", 10);
         detectAndPersecute.AddChild(new Leaf("PlayerDetected", new Condition(() => detected)));
         detectAndPersecute.AddChild(new Leaf("LookPack", new ConidtionatedActionStrategy(() => packManager.AddWolftoPack(gameObject), () => !packManager.pack.Contains(gameObject))));
 
         // [Selector comportamiento en detección]
         PrioritySelector packBehaviour = new PrioritySelector("PackBehaviour");
 
-        Secuence directAttack = new Secuence("directAttack", 10);
+        BehaviourTrees.Sequence directAttack = new BehaviourTrees.Sequence("directAttack", 10);
         directAttack.AddChild(new Leaf("IsNear", new Condition(() => (player.transform.position - transform.position).magnitude < 5)));
         directAttack.AddChild(new Leaf("Persecute", new ActionStrategy(() => agent.SetDestination(player.transform.position))));
 
-        Secuence ifAlpha = new Secuence("IfAlpha", 5);
+        BehaviourTrees.Sequence ifAlpha = new BehaviourTrees.Sequence("IfAlpha", 5);
         ifAlpha.AddChild(new Leaf("ImAlpha", new Condition(() => imAlpha)));
         ifAlpha.AddChild(new Leaf("AlphaPersecute", new ActionStrategy(() => agent.SetDestination(player.transform.position))));
 
@@ -81,7 +81,7 @@ public class WolfAI : MonoBehaviour
         detectAndPersecute.AddChild(packBehaviour);
 
         // [[Comportamiento búsqueda jugador]]
-        Secuence lookAround = new Secuence("LookAround", 5);
+        BehaviourTrees.Sequence lookAround = new BehaviourTrees.Sequence("LookAround", 5);
         lookAround.AddChild(new Leaf("HearSomething", new Condition(() => hear)));
         lookAround.AddChild(new Leaf("TurnAround", new TurnAroundStrategy(transform, agent, lookAroundSpeed)));
 

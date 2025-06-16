@@ -138,9 +138,9 @@ namespace BehaviourTrees
                 agent.SetDestination(destination);
                 //entity.LookAt(destination);
             }
-            else return Node.Status.Succsess;
+            else return Node.Status.Running;
 
-            return Node.Status.Running;
+            return Node.Status.Succsess;
         }
     }
 

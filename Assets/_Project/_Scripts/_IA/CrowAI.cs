@@ -59,12 +59,12 @@ public class CrowAI : MonoBehaviour
         PrioritySelector actions = new PrioritySelector("Actions");
 
         // [[Comportamiento detección jugador]]
-        Secuence detectAndPersecute = new Secuence("DetectAndPersecute", 10);
+        BehaviourTrees.Sequence detectAndPersecute = new BehaviourTrees.Sequence("DetectAndPersecute", 10);
         detectAndPersecute.AddChild(new Leaf("PlayerDetected", new Condition(() => detected)));
         detectAndPersecute.AddChild(new Leaf("SurroundPlayer", new SurroundTargetStrategy(transform, agent, player.transform, radius, rotationSpeed, maxDistance)));
 
         // [[Comportamiento búsqueda jugador]]
-        Secuence lookAround = new Secuence("LookAround", 5);
+        BehaviourTrees.Sequence lookAround = new BehaviourTrees.Sequence("LookAround", 5);
         lookAround.AddChild(new Leaf("HearSomething", new Condition(() => hear)));
         lookAround.AddChild(new Leaf("TurnAround", new TurnAroundStrategy(transform, agent, lookAroundSpeed)));
 

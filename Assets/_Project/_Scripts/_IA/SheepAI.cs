@@ -51,14 +51,14 @@ public class SheepAI : MonoBehaviour
         PrioritySelector actions = new PrioritySelector("Actions");
 
         // [[Comportamiento seguir jugador]]
-        Secuence followPlayer = new Secuence("FollowPlayer", 10);
-        followPlayer.AddChild(new Leaf("PlayerDetected", new Condition(() => follow)));
-        followPlayer.AddChild(new Leaf("LookPack", new ConidtionatedActionStrategy(() => agent.SetDestination(player.transform.position), () => detected)));
+        BehaviourTrees.Sequence followPlayer = new BehaviourTrees.Sequence("FollowPlayer", 10);
+        followPlayer.AddChild(new Leaf("IsFollowing", new Condition(() => follow)));
+        followPlayer.AddChild(new Leaf("Follow", new ConidtionatedActionStrategy(() => agent.SetDestination(player.transform.position), () => detected)));
 
         // [[Comportamiento pasear]]
-        Secuence wanderAround = new Secuence("WanderAround", 5);
-        wanderAround.AddChild(new Leaf("PlayerDetected", new Condition(() => wander)));
-        wanderAround.AddChild(new Leaf("WalkAround", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius)));
+        BehaviourTrees.Sequence wanderAround = new BehaviourTrees.Sequence("WanderAround", 5);
+        wanderAround.AddChild(new Leaf("IsWandering", new Condition(() => wander)));
+        wanderAround.AddChild(new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius)));
 
         Leaf stay = new Leaf("StayInPlace", new ActionStrategy(() => agent.ResetPath()));
 
