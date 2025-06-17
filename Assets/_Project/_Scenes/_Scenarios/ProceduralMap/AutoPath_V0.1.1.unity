@@ -4041,7 +4041,7 @@ MonoBehaviour:
   maxRooms: 12
   wallSice: 4
   randomizeSice: 3
-  oneBetween: 200
+  oneBetween: 50
   forests:
   - {fileID: 4002461411312752024, guid: 481c0819e0fef724c822dd28c889b8b7, type: 3}
   - {fileID: 4002461411312752024, guid: d32f3eeba71e64c4da13b5fe45048ca7, type: 3}
@@ -4057,7 +4057,7 @@ MonoBehaviour:
   - {fileID: 2504174453395755284, guid: dfc8b750d1aab154cb72cf1b10e94f29, type: 3}
   - {fileID: 2504174453395755284, guid: e61e353e453541a4bbf3e403df17dba3, type: 3}
   - {fileID: 2504174453395755284, guid: d5ca28c488b94c14ca549fced5d3de38, type: 3}
-  enemy: {fileID: 1689425122458126286, guid: 811eb0d3b72c6df46aed51af7de9ddc7, type: 3}
+  enemy: {fileID: 1430296292382172304, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
 --- !u!1001 &1256149927
 PrefabInstance:
   m_ObjectHideFlags: 0

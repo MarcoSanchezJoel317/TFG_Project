@@ -349,7 +349,9 @@ public class MapCreator : MonoBehaviour
 
                     if (map[y][x][0] == 2)
                     {
-                        ene = Instantiate(enemy, position + new Vector3(0, -0.05f, 0), Quaternion.identity);
+                        ene = Instantiate(enemy, position + new Vector3(0, -0.3f, 0), Quaternion.identity);
+
+                        ene.transform.LookAt(new Vector3(51.5f, 0, 25));
                         ene.transform.parent = enemysParent.transform; // Asignar el padre
                     }
                 }
