@@ -3952,7 +3952,7 @@ MonoBehaviour:
   - {fileID: 2504174453395755284, guid: dfc8b750d1aab154cb72cf1b10e94f29, type: 3}
   - {fileID: 2504174453395755284, guid: e61e353e453541a4bbf3e403df17dba3, type: 3}
   - {fileID: 2504174453395755284, guid: d5ca28c488b94c14ca549fced5d3de38, type: 3}
-  enemy: {fileID: 1430296292382172304, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+  enemy: {fileID: 1430296292382172304, guid: a4268d21ccff3ca4eb1942acadd70ffe, type: 3}
 --- !u!1001 &1256149927
 PrefabInstance:
   m_ObjectHideFlags: 0
