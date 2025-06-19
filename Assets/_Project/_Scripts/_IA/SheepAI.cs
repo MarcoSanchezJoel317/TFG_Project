@@ -111,4 +111,31 @@ public class SheepAI : MonoBehaviour
         }
         return true;
     }
+    private void OnDrawGizmosSelected()
+    {
+        // Dibujar el área de patrullaje
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, areaRadius);
+
+        // Dibujar el cono de visión (simplificado a líneas guía)
+        Gizmos.color = Color.yellow;
+
+        Vector3 origin = transform.position + Vector3.up * 6;
+
+        // Centro
+        Vector3 forward = transform.forward * maxDistance;
+        Gizmos.DrawLine(origin, origin + forward);
+
+        // Extremos horizontales
+        Quaternion leftRotation = Quaternion.Euler(0, -horizontalFOV / 2f, 0);
+        Quaternion rightRotation = Quaternion.Euler(0, horizontalFOV / 2f, 0);
+        Gizmos.DrawLine(origin, origin + leftRotation * forward);
+        Gizmos.DrawLine(origin, origin + rightRotation * forward);
+
+        // Extremos verticales (solo representativo en 3D)
+        Quaternion upRotation = Quaternion.Euler(-verticalFOV / 2f, 0, 0);
+        Quaternion downRotation = Quaternion.Euler(verticalFOV / 2f, 0, 0);
+        Gizmos.DrawLine(origin, origin + upRotation * forward);
+        Gizmos.DrawLine(origin, origin + downRotation * forward);
+    }
 }

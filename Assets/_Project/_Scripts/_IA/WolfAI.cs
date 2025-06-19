@@ -85,7 +85,11 @@ public class WolfAI : MonoBehaviour
         lookAround.AddChild(new Leaf("HearSomething", new Condition(() => hear)));
         lookAround.AddChild(new Leaf("TurnAround", new TurnAroundStrategy(transform, agent, lookAroundSpeed)));
 
-        Leaf wander = new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius), 0);
+        Leaf wander;
+        if (wayPoints.Count > 0)
+            wander = new Leaf("Wander", new PatrolStrategy(transform, agent, wayPoints, speed), 0);
+        else
+            wander = new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius), 0);
 
         // [[[Contrucción del arbol final]]]
         actions.AddChild(detectAndPersecute);
@@ -154,5 +158,34 @@ public class WolfAI : MonoBehaviour
         if ((player.transform.position - transform.position).magnitude < maxDistance) return true;
         return false;
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        // Dibujar el área de patrullaje
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, areaRadius);
+
+        // Dibujar el cono de visión (simplificado a líneas guía)
+        Gizmos.color = Color.yellow;
+
+        Vector3 origin = transform.position + Vector3.up * 6;
+
+        // Centro
+        Vector3 forward = transform.forward * maxDistance;
+        Gizmos.DrawLine(origin, origin + forward);
+
+        // Extremos horizontales
+        Quaternion leftRotation = Quaternion.Euler(0, -horizontalFOV / 2f, 0);
+        Quaternion rightRotation = Quaternion.Euler(0, horizontalFOV / 2f, 0);
+        Gizmos.DrawLine(origin, origin + leftRotation * forward);
+        Gizmos.DrawLine(origin, origin + rightRotation * forward);
+
+        // Extremos verticales (solo representativo en 3D)
+        Quaternion upRotation = Quaternion.Euler(-verticalFOV / 2f, 0, 0);
+        Quaternion downRotation = Quaternion.Euler(verticalFOV / 2f, 0, 0);
+        Gizmos.DrawLine(origin, origin + upRotation * forward);
+        Gizmos.DrawLine(origin, origin + downRotation * forward);
+    }
+
 
 }

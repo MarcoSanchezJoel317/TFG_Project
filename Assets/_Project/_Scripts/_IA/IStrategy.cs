@@ -74,7 +74,6 @@ namespace BehaviourTrees
         readonly List<Transform> patrolPoints;
         readonly float patrolSpeed;
         int courrentIndex;
-        bool isPathCalculated;
 
         public PatrolStrategy(Transform entity, NavMeshAgent agent, List<Transform> patrolPoints, float patrolSpeed = 200f)
         {
@@ -90,16 +89,10 @@ namespace BehaviourTrees
 
             var target = patrolPoints[courrentIndex];
             agent.SetDestination(target.position);
-            entity.LookAt(target);
 
-            if (isPathCalculated && agent.remainingDistance < 0.1f)
+            if ((entity.position - target.position).magnitude < 3f)
             {
                 courrentIndex++;
-                isPathCalculated = false;
-            }
-            if (agent.pathPending)
-            {
-                isPathCalculated = true;
             }
 
             return Node.Status.Running;

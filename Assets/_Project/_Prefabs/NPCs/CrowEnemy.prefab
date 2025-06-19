@@ -533,7 +533,7 @@ GameObject:
   - component: {fileID: 2764216308272207169}
   m_Layer: 0
   m_Name: CrowEnemy
-  m_TagString: Untagged
+  m_TagString: Crow
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -590,11 +590,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2
   runningSpeed: 5
-  maxDistance: 100
+  maxDistance: 50
   horizontalFOV: 120
   verticalFOV: 120
   wayPoints: []
-  areaRadius: 100
+  areaRadius: 50
   lookAroundSpeed: 90
   radius: 3
   rotationSpeed: 100
