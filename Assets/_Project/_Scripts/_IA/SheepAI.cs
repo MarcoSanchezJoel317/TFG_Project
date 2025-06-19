@@ -58,7 +58,10 @@ public class SheepAI : MonoBehaviour
         // [[Comportamiento pasear]]
         BehaviourTrees.Sequence wanderAround = new BehaviourTrees.Sequence("WanderAround", 5);
         wanderAround.AddChild(new Leaf("IsWandering", new Condition(() => wander)));
-        wanderAround.AddChild(new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius)));
+        if (wayPoints.Count > 0)
+            wanderAround.AddChild(new Leaf("Wander", new PatrolStrategy(transform, agent, wayPoints, speed)));
+        else
+            wanderAround.AddChild(new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius)));        
 
         Leaf stay = new Leaf("StayInPlace", new ActionStrategy(() => agent.ResetPath()));
 

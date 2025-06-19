@@ -68,7 +68,11 @@ public class CrowAI : MonoBehaviour
         lookAround.AddChild(new Leaf("HearSomething", new Condition(() => hear)));
         lookAround.AddChild(new Leaf("TurnAround", new TurnAroundStrategy(transform, agent, lookAroundSpeed)));
 
-        Leaf wander = new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius), 0);
+        Leaf wander;
+        if (wayPoints.Count > 0)
+            wander = new Leaf("Wander", new PatrolStrategy(transform, agent, wayPoints, speed), 0);
+        else
+            wander = new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius), 0);
 
         // [[[Contrucción del arbol final]]]
         actions.AddChild(detectAndPersecute);
