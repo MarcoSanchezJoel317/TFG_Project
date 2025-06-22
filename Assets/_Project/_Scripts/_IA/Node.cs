@@ -121,9 +121,9 @@ namespace BehaviourTrees
         }
     }
 
-    public class Secuence : Node
+    public class Sequence : Node
     {
-        public Secuence(string name, int priority = 0) : base(name, priority) { }
+        public Sequence(string name, int priority = 0) : base(name, priority) { }
 
         public override Status Process()
         {

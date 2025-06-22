@@ -29,11 +29,11 @@ public class NPC : MonoBehaviour
         Leaf isTargetPresent2 = new Leaf("isTargetPresent2", new Condition(() => target2.activeSelf));
         Leaf moveToTarget2 = new Leaf("moveToTarget2", new ActionStrategy(() => agent.SetDestination(target2.transform.position)));
 
-        Secuence goToTarget1 = new Secuence("goToTarget1", 10);
+        Sequence goToTarget1 = new Sequence("goToTarget1", 10);
         goToTarget1.AddChild(isTargetPresent1);
         goToTarget1.AddChild(moveToTarget1);
 
-        Secuence goToTarget2 = new Secuence("goToTarget2", 20);
+        Sequence goToTarget2 = new Sequence("goToTarget2", 20);
         goToTarget2.AddChild(isTargetPresent2);
         goToTarget2.AddChild(moveToTarget2);
 

@@ -51,14 +51,17 @@ public class SheepAI : MonoBehaviour
         PrioritySelector actions = new PrioritySelector("Actions");
 
         // [[Comportamiento seguir jugador]]
-        Secuence followPlayer = new Secuence("FollowPlayer", 10);
-        followPlayer.AddChild(new Leaf("PlayerDetected", new Condition(() => follow)));
-        followPlayer.AddChild(new Leaf("LookPack", new ConidtionatedActionStrategy(() => agent.SetDestination(player.transform.position), () => detected)));
+        BehaviourTrees.Sequence followPlayer = new BehaviourTrees.Sequence("FollowPlayer", 10);
+        followPlayer.AddChild(new Leaf("IsFollowing", new Condition(() => follow)));
+        followPlayer.AddChild(new Leaf("Follow", new ConidtionatedActionStrategy(() => agent.SetDestination(player.transform.position), () => detected)));
 
         // [[Comportamiento pasear]]
-        Secuence wanderAround = new Secuence("WanderAround", 5);
-        wanderAround.AddChild(new Leaf("PlayerDetected", new Condition(() => wander)));
-        wanderAround.AddChild(new Leaf("WalkAround", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius)));
+        BehaviourTrees.Sequence wanderAround = new BehaviourTrees.Sequence("WanderAround", 5);
+        wanderAround.AddChild(new Leaf("IsWandering", new Condition(() => wander)));
+        if (wayPoints.Count > 0)
+            wanderAround.AddChild(new Leaf("Wander", new PatrolStrategy(transform, agent, wayPoints, speed)));
+        else
+            wanderAround.AddChild(new Leaf("Wander", new PatrolAreaStrategy(transform, initialPos, agent, areaRadius)));        
 
         Leaf stay = new Leaf("StayInPlace", new ActionStrategy(() => agent.ResetPath()));
 
@@ -110,5 +113,32 @@ public class SheepAI : MonoBehaviour
                    Mathf.Abs(verticalAngle) <= verticalFOV / 2f;
         }
         return true;
+    }
+    private void OnDrawGizmosSelected()
+    {
+        // Dibujar el área de patrullaje
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, areaRadius);
+
+        // Dibujar el cono de visión (simplificado a líneas guía)
+        Gizmos.color = Color.yellow;
+
+        Vector3 origin = transform.position + Vector3.up * 6;
+
+        // Centro
+        Vector3 forward = transform.forward * maxDistance;
+        Gizmos.DrawLine(origin, origin + forward);
+
+        // Extremos horizontales
+        Quaternion leftRotation = Quaternion.Euler(0, -horizontalFOV / 2f, 0);
+        Quaternion rightRotation = Quaternion.Euler(0, horizontalFOV / 2f, 0);
+        Gizmos.DrawLine(origin, origin + leftRotation * forward);
+        Gizmos.DrawLine(origin, origin + rightRotation * forward);
+
+        // Extremos verticales (solo representativo en 3D)
+        Quaternion upRotation = Quaternion.Euler(-verticalFOV / 2f, 0, 0);
+        Quaternion downRotation = Quaternion.Euler(verticalFOV / 2f, 0, 0);
+        Gizmos.DrawLine(origin, origin + upRotation * forward);
+        Gizmos.DrawLine(origin, origin + downRotation * forward);
     }
 }
