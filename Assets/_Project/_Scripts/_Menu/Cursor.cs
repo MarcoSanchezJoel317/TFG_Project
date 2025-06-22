@@ -3,23 +3,13 @@
     Autor: Álvaro R. Acosta
     Trabajo de Fin de Grado (TFG)
     ---------------------------------------------------------------------------
-    Este script implementa un cursor personalizado para menús UI en Unity 6
-    utilizando el nuevo Input System. Proporciona:
-
-    1. Soporte de movimiento por ratón y gamepad, con cambio automático
-       de modo según el último dispositivo usado.
-    2. Restricción (clamping) para que el cursor no salga de los límites
-       de la pantalla.
-    3. Simulación de clic UI con gamepad, disparando eventos PointerClick
-       en los elementos bajo el cursor.
-    4. Suavizado (lerp) en el movimiento con gamepad para evitar saltos
-       bruscos.
-
-    Uso:
-    - Añadir el componente a un GameObject con SpriteRenderer.
-    - Asignar el material emissive (que tenga _EmissionColor habilitado).
-    - Configurar referencias InputActionReference: Move (Vector2) y Click.
-    - Asegurarse de tener un EventSystem con Input System UI Module.
+    Controla un cursor UI personalizado en Unity usando el nuevo Input System.
+    --------------------------------------------------------------------------------
+    Características principales:
+    1. Movimiento por ratón y gamepad, con detección automática de modo.
+    2. Clamping para mantener el cursor dentro de la pantalla.
+    3. Simulación de clics UI mediante eventos PointerClick.
+    4. Suavizado (lerp) del movimiento de gamepad para evitar saltos bruscos.
 */
 
 using UnityEngine;
@@ -27,132 +17,213 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
+/// <summary>
+/// Controla la posición y la interacción del cursor en menús UI.
+/// </summary>
 [RequireComponent(typeof(SpriteRenderer))]
 public class Cursor : MonoBehaviour
 {
-    [Header("Cursor Visual")]
-    [Tooltip("Distancia en Z para convertir ScreenToWorldPoint.")]
-    [SerializeField] private float distanceFromCamera = 10f;
+    [Header("Configuración Visual")]
+    [Tooltip("Profundidad Z para convertir ScreenToWorldPoint.")]
+    [SerializeField] private float _distanceFromCamera = 10f;
 
-    [Header("Movement")]
-    [Tooltip("Velocidad base del cursor con gamepad.")]
-    [SerializeField] private float gamepadSpeed = 5f;
-    [Tooltip("Factor de suavizado (0=saltar; 1=inmediato).")]
+    [Header("Movimiento con Gamepad")]
+    [Tooltip("Velocidad de movimiento cuando se usa gamepad.")]
+    [SerializeField] private float _gamepadSpeed = 5f;
+    [Tooltip("Factor de suavizado (0 = sin suavizado; 1 = sin interpolación).")]
     [Range(0f, 1f)]
-    [SerializeField] private float smoothFactor = 0.2f;
+    [SerializeField] private float _smoothFactor = 0.2f;
 
-    [Header("Input Actions")]
-    [Tooltip("Referencia a la acción Move (Vector2)")]
+    [Header("Referencias Input System")]
+    [Tooltip("Acción de entrada para movimiento (Vector2).")]
     public InputActionReference moveAction;
-    [Tooltip("Referencia a la acción Click (Button)")]
+    [Tooltip("Acción de entrada para 'click' (Button).")]
     public InputActionReference clickAction;
 
-    // Componentes privados
-    private Vector2 _gamepadInput;
-
-    // Modo de entrada
+    // Estados posibles de entrada
     private enum InputMode { None, Mouse, Gamepad }
     private InputMode _lastInputMode = InputMode.None;
 
+    // Lectura de valores del stick
+    private Vector2 _gamepadInput;
+
+    // Cacheo de referencias frecuentes
+    private Camera _cam;
+    private EventSystem _eventSystem;
+
+    #region Ciclo de Vida
+
     void Awake()
     {
-        // Obtenemos componentes y material
+        // Cacheamos la cámara principal y el EventSystem para acelerar accesos frecuentes
+        _cam = Camera.main;
+        _eventSystem = EventSystem.current;
 
-        // Suscribimos acciones del nuevo Input System
-        moveAction.action.performed += OnGamepadMove;
-        moveAction.action.canceled += OnGamepadMove;
-        clickAction.action.performed += _ => OnGamepadClick();
+        // Suscribimos métodos a los callbacks del Input System, con null-check
+        if (moveAction?.action != null)
+        {
+            moveAction.action.performed += OnGamepadMove;
+            moveAction.action.canceled += OnGamepadMove;
+        }
+        if (clickAction?.action != null)
+            clickAction.action.performed += _ => OnGamepadClick();
     }
 
     void OnEnable()
     {
-        moveAction.action.Enable();
-        clickAction.action.Enable();
+        // Activamos las acciones para recibir eventos
+        moveAction?.action.Enable();
+        clickAction?.action.Enable();
     }
 
     void OnDisable()
     {
-        moveAction.action.Disable();
-        clickAction.action.Disable();
+        // Desactivamos las acciones al deshabilitar el objeto
+        moveAction?.action.Disable();
+        clickAction?.action.Disable();
+    }
+
+    void OnDestroy()
+    {
+        // Nos desuscribimos para evitar memory leaks
+        if (moveAction?.action != null)
+        {
+            moveAction.action.performed -= OnGamepadMove;
+            moveAction.action.canceled -= OnGamepadMove;
+        }
+        if (clickAction?.action != null)
+            clickAction.action.performed -= _ => OnGamepadClick();
     }
 
     void Update()
     {
-        // Movimiento y clamping cada frame
-        HandleMovement();
+        // 1. Determinamos la posición objetivo según dispositivo
+        Vector3 target = transform.position;
+        // Si hubo movimiento de ratón, lo procesamos; si no, procesamos gamepad
+        if (!TryHandleMouse(ref target))
+            TryHandleGamepad(ref target);
+
+        // 2. Suavizamos el movimiento para gamepad (ratón no usa lerp)
+        Vector3 smoothed = ApplySmoothing(target);
+
+        // 3. Clampeamos la posición para que no salga de la pantalla
+        transform.position = ApplyClamping(smoothed);
     }
 
+    #endregion
+
+    #region Callbacks Input System
+
     /// <summary>
-    /// Ajusta nueva entrada de stick gamepad.
+    /// Callback del stick de gamepad: simplemente guardamos el vector 2.
     /// </summary>
+    /// <param name="ctx">Contexto que contiene el Vector2 del stick.</param>
     private void OnGamepadMove(InputAction.CallbackContext ctx)
     {
         _gamepadInput = ctx.ReadValue<Vector2>();
     }
 
     /// <summary>
-    /// Simula un "click" UI en la posición del cursor.
+    /// Simula un clic UI en la posición actual del cursor.
     /// </summary>
     private void OnGamepadClick()
     {
-        print("Me stan llamando");
-        PointerEventData pointer = new PointerEventData(EventSystem.current)
+        // Log para depuración centralizada
+        CustomLogger.Log(this,$"[Cursor] Clic de gamepad en modo {_lastInputMode}");
+
+        // Creamos un PointerEventData con la posición de pantalla del cursor
+        var pointer = new PointerEventData(_eventSystem)
         {
-            position = Camera.main.WorldToScreenPoint(transform.position)
+            position = _cam.WorldToScreenPoint(transform.position)
         };
+
+        // Raycast contra todos los elementos UI
         var results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(pointer, results);
+        _eventSystem.RaycastAll(pointer, results);
+
         if (results.Count > 0)
         {
-            Debug.Log(results[0].gameObject.name);
-            ExecuteEvents.Execute(results[0].gameObject,
-                                  pointer,
-                                  ExecuteEvents.pointerClickHandler);
+            // Ejecutamos el evento pointerClickHandler en el primer elemento hit
+            var hitGO = results[0].gameObject;
+            CustomLogger.Log(this, $"[Cursor] Elemento UI clicado: {hitGO.name}");
+            ExecuteEvents.Execute(hitGO, pointer, ExecuteEvents.pointerClickHandler);
         }
+    }
+
+    #endregion
+
+    #region Movimiento y Clamping
+
+    /// <summary>
+    /// Maneja movimiento por ratón.  
+    /// </summary>
+    /// <param name="target">Referencia a la posición objetivo a modificar.</param>
+    /// <returns>True si se detectó y aplicó movimiento de ratón.</returns>
+    private bool TryHandleMouse(ref Vector3 target)
+    {
+        Vector2 delta = Mouse.current.delta.ReadValue();
+        // Si no hay movimiento de ratón, devolvemos false
+        if (delta.sqrMagnitude <= 0f)
+            return false;
+
+        // Actualizamos modo e interpretamos posición absoluta del ratón
+        _lastInputMode = InputMode.Mouse;
+        Vector3 screenPos = Mouse.current.position.ReadValue();
+        screenPos.z = _distanceFromCamera;  // Profundidad para ScreenToWorldPoint
+        target = _cam.ScreenToWorldPoint(screenPos);
+        return true;
     }
 
     /// <summary>
-    /// Mueve el cursor con ratón o gamepad, y lo ajusta a pantalla.
+    /// Maneja movimiento por gamepad, con warping del cursor hardware.  
     /// </summary>
-    private void HandleMovement()
+    /// <param name="target">Referencia a la posición objetivo a modificar.</param>
+    /// <returns>True si se detectó y aplicó movimiento de gamepad.</returns>
+    private bool TryHandleGamepad(ref Vector3 target)
     {
-        Vector3 targetPos = transform.position;
+        if (_gamepadInput.sqrMagnitude <= 0f)
+            return false;
 
-        // 1) Ratón
-        Vector2 mouseDelta = Mouse.current.delta.ReadValue();
-        if (mouseDelta.sqrMagnitude > 0f)
+        _lastInputMode = InputMode.Gamepad;
+        // Desplazamos target según stick y velocidad
+        target += new Vector3(_gamepadInput.x, _gamepadInput.y, 0f)
+                  * _gamepadSpeed * Time.deltaTime;
+
+        // Opcional: mover físicamente el cursor del sistema para coherencia
+        if (Mouse.current != null)
         {
-            _lastInputMode = InputMode.Mouse;
-            Vector3 mp = Mouse.current.position.ReadValue();
-            mp.z = distanceFromCamera;
-            targetPos = Camera.main.ScreenToWorldPoint(mp);
+            Vector2 screenPos = _cam.WorldToScreenPoint(target);
+            Mouse.current.WarpCursorPosition(screenPos);
         }
 
-        // 2) Gamepad
-        if (_gamepadInput.sqrMagnitude > 0f)
-        {
-            _lastInputMode = InputMode.Gamepad;
-            targetPos += new Vector3(_gamepadInput.x, _gamepadInput.y, 0f)
-                         * gamepadSpeed * Time.deltaTime;
-
-                       // ¡Aquí warp el cursor virtual!
-            Vector2 screenPos = Camera.main.WorldToScreenPoint(targetPos);
-                       if (Mouse.current != null)
-                Mouse.current.WarpCursorPosition(screenPos);
-        }
-
-        // 3) Suavizado
-        Vector3 smoothPos = Vector3.Lerp(transform.position,
-                                         targetPos,
-                                         smoothFactor);
-
-        // 4) Clamping
-        Vector3 min = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, distanceFromCamera));
-        Vector3 max = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, distanceFromCamera));
-        smoothPos.x = Mathf.Clamp(smoothPos.x, min.x, max.x);
-        smoothPos.y = Mathf.Clamp(smoothPos.y, min.y, max.y);
-
-        transform.position = smoothPos;
+        return true;
     }
 
+    /// <summary>
+    /// Interpola linealmente la posición actual hacia la posición objetivo.  
+    /// </summary>
+    private Vector3 ApplySmoothing(Vector3 target)
+    {
+        // El ratón no se ve afectado (delta fuerte), pero un valor pequeño de _smoothFactor
+        // suaviza desplazamientos de gamepad.
+        return Vector3.Lerp(transform.position, target, _smoothFactor);
+    }
+
+    /// <summary>
+    /// Restringe la posición dentro de los límites de la pantalla.  
+    /// </summary>
+    private Vector3 ApplyClamping(Vector3 pos)
+    {
+        // Convertimos esquinas de pantalla a coordenadas de mundo
+        Vector3 min = _cam.ScreenToWorldPoint(new Vector3(0, 0, _distanceFromCamera));
+        Vector3 max = _cam.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, _distanceFromCamera));
+
+        // Clampeo en X e Y para no salirnos del rectángulo de la cámara
+        pos.x = Mathf.Clamp(pos.x, min.x, max.x);
+        pos.y = Mathf.Clamp(pos.y, min.y, max.y);
+        return pos;
+    }
+
+    #endregion
 }
+
