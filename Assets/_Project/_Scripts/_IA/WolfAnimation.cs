@@ -93,4 +93,46 @@ public class WolfAnimation : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, finalRotation, alignSpeed * Time.deltaTime);
         }
     }
+
+    public AudioSource audioSource;
+    public AudioSource attackSource;
+    public AudioClip walk;
+    public AudioClip run;
+    public AudioClip attack;
+
+    public void PlayWalk()
+    {
+        if (audioSource && walk)
+        {
+            if (audioSource.clip != walk || !audioSource.isPlaying)
+            {
+                audioSource.clip = walk;
+                audioSource.loop = true;
+                audioSource.Play();
+            }
+        }
+    }
+    public void PlayRun()
+    {
+        if (audioSource && run)
+        {
+            audioSource.clip = run;
+            audioSource.Play();
+        }
+    }
+    public void PlayAttack()
+    {
+        if (attackSource && attack)
+        {
+            if (!attackSource.isPlaying)
+                attackSource.PlayOneShot(attack);
+        }
+    }
+    public void Stop()
+    {
+        if (audioSource && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+    }
 }

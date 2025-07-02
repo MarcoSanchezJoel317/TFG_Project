@@ -92,4 +92,36 @@ public class PlayerControllerTest : MonoBehaviour
             rb.rotation = Quaternion.RotateTowards(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
         }
     }
+
+    public AudioSource audioSource;
+    public AudioClip walk;
+    public AudioClip run;
+
+    public void PlayWalk()
+    {
+        if (audioSource && walk)
+        {
+            if (audioSource.clip != walk || !audioSource.isPlaying)
+            {
+                audioSource.clip = walk;
+                audioSource.loop = true;
+                audioSource.Play();
+            }
+        }
+    }
+    public void PlayRun()
+    {
+        if (audioSource && run)
+        {
+            audioSource.clip = run;
+            audioSource.Play();
+        }
+    }
+    public void Stop()
+    {
+        if (audioSource && audioSource.isPlaying)
+        {
+            audioSource.Stop(); 
+        }
+    }
 }

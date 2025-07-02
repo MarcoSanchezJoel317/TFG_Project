@@ -96,4 +96,19 @@ public class SheepAnimation : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, finalRotation, alignSpeed * Time.deltaTime);
         }
     }
+
+    public AudioSource audioSource;
+    public AudioClip walk;
+
+    public void PlayWalk()
+    {
+        if (audioSource && walk)
+        {
+            audioSource.PlayOneShot(walk);
+        }
+    }
+    public void Stop()
+    {
+        audioSource?.Stop();
+    }
 }
