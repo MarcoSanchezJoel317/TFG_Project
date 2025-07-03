@@ -1263,6 +1263,10 @@ PrefabInstance:
       value: SnowTerrain (8)
       objectReference: {fileID: 0}
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_TagString
       value: Walkable
       objectReference: {fileID: 0}
@@ -1312,7 +1316,7 @@ GameObject:
   - component: {fileID: 348189923}
   - component: {fileID: 348189922}
   - component: {fileID: 348189921}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1556,6 +1560,10 @@ PrefabInstance:
       value: SnowTerrain (4)
       objectReference: {fileID: 0}
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_TagString
       value: Walkable
       objectReference: {fileID: 0}
@@ -1677,6 +1685,10 @@ PrefabInstance:
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_Name
       value: SnowTerrain (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_TagString
@@ -2496,6 +2508,10 @@ PrefabInstance:
       value: SnowTerrain (5)
       objectReference: {fileID: 0}
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_TagString
       value: Walkable
       objectReference: {fileID: 0}
@@ -2934,7 +2950,7 @@ GameObject:
   - component: {fileID: 861434471}
   - component: {fileID: 861434470}
   - component: {fileID: 861434469}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Terrain_(-1000.00, 0.00, 0.00)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3227,6 +3243,10 @@ PrefabInstance:
       value: SnowTerrain (7)
       objectReference: {fileID: 0}
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_TagString
       value: Walkable
       objectReference: {fileID: 0}
@@ -3358,6 +3378,10 @@ PrefabInstance:
       value: SnowTerrain (1)
       objectReference: {fileID: 0}
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_TagString
       value: Walkable
       objectReference: {fileID: 0}
@@ -3484,6 +3508,10 @@ PrefabInstance:
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_Name
       value: SnowTerrain (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_TagString
@@ -3946,6 +3974,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 77601736310879900, guid: 3df81f4941892a644a789899ffe63696, type: 3}
   m_PrefabInstance: {fileID: 1076518412}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1098164166 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6291135909804927252, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
+  m_PrefabInstance: {fileID: 1259945408}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1105425607 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b4ae8d082d199ae40b64ce715be1369d, type: 3}
@@ -3962,7 +3995,7 @@ GameObject:
   - component: {fileID: 1217850236}
   - component: {fileID: 1217850235}
   - component: {fileID: 1217850234}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Terrain_(0.00, 0.00, -1000.00)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4168,6 +4201,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 283e34003890b0c49bb276dfb1aa93b6, type: 3}
     - target: {fileID: 6340726172319060646, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
+      propertyPath: rayLength
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340726172319060646, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
+      propertyPath: repelForce
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340726172319060646, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
       propertyPath: audioSource
       value: 
       objectReference: {fileID: 1259945409}
@@ -4181,7 +4222,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 307738276826343634, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2089651549}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6291135909804927252, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1412878300}
   m_SourcePrefab: {fileID: 100100000, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
 --- !u!82 &1259945409 stripped
 AudioSource:
@@ -4462,6 +4506,29 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 307738276826343634, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
   m_PrefabInstance: {fileID: 1259945408}
   m_PrefabAsset: {fileID: 0}
+--- !u!136 &1412878300
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098164166}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.17940027
+  m_Height: 0.7670675
+  m_Direction: 2
+  m_Center: {x: 0, y: 0.073280156, z: 0.052343097}
 --- !u!1001 &1446535232
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4785,7 +4852,7 @@ GameObject:
   - component: {fileID: 1598242207}
   - component: {fileID: 1598242206}
   - component: {fileID: 1598242205}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Terrain_(-1000.00, 0.00, -1000.00)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5279,6 +5346,10 @@ PrefabInstance:
       value: SnowTerrain (6)
       objectReference: {fileID: 0}
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_TagString
       value: Walkable
       objectReference: {fileID: 0}
@@ -5586,7 +5657,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1808468328}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.07412586, y: -0.0055016386, z: 0.000408945, w: 0.9972336}
+  m_LocalRotation: {x: 0.07412592, y: -0.005345251, z: 0.00039732043, w: 0.9972345}
   m_LocalPosition: {x: -566.70374, y: 30.289185, z: 217.78214}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6336,7 +6407,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 191
+    m_Bits: 447
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -6356,7 +6427,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2064388210}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.07412586, y: -0.005501638, z: 0.00040894496, w: 0.9972337}
+  m_LocalRotation: {x: 0.07412593, y: -0.005345252, z: 0.00039732055, w: 0.9972345}
   m_LocalPosition: {x: -566.70374, y: 30.289185, z: 217.78214}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6569,6 +6640,10 @@ PrefabInstance:
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_Name
       value: SnowTerrain
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5380854014995750180, guid: c6d6be11913d1f74ebef390cf10ea0a8, type: 3}
       propertyPath: m_TagString
