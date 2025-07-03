@@ -1146,9 +1146,6 @@ GameObject:
   - component: {fileID: 4367084170784211619}
   - component: {fileID: 2706583941826120451}
   - component: {fileID: 3232539637438054542}
-  - component: {fileID: 3725606691042860141}
-  - component: {fileID: 3364814428501181517}
-  - component: {fileID: 4240124344121270115}
   m_Layer: 0
   m_Name: Sheep_PBR
   m_TagString: Untagged
@@ -1229,70 +1226,6 @@ LODGroup:
     renderers:
     - renderer: {fileID: 7487660377483835262}
   m_Enabled: 1
---- !u!114 &3725606691042860141
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5685398707038595060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74238e6d6e238fb40a1375760d85000f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 3
-  rotationSpeed: 720
---- !u!54 &3364814428501181517
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5685398707038595060}
-  serializedVersion: 4
-  m_Mass: 60
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: -1, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 64
-  m_CollisionDetection: 0
---- !u!136 &4240124344121270115
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5685398707038595060}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.3124966
-  m_Height: 1.2669648
-  m_Direction: 2
-  m_Center: {x: 0, y: 0.5617993, z: 0.108839676}
 --- !u!1 &5719291854640897622
 GameObject:
   m_ObjectHideFlags: 0

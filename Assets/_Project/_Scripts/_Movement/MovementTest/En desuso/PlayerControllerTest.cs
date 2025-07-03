@@ -5,20 +5,20 @@ using UnityEngine;
 public class PlayerControllerTest : MonoBehaviour
 {
     [Header("Control Movimiento")]
-    public float moveSpeed = 30f;
+    public float moveSpeed = 15f;
     float saveSpeed;
     public float rotationSpeed = 720f;
 
     private Rigidbody rb;
     private Vector3 inputDirection;
 
-    Animator animator;
+    public Animator animator;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         
-        animator = GetComponent<Animator>();
+        //animator = GetComponent<Animator>();
         saveSpeed = moveSpeed;
     }
 
