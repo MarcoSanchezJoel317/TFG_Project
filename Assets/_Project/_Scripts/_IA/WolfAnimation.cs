@@ -94,6 +94,7 @@ public class WolfAnimation : MonoBehaviour
         }
     }
 
+    [Header("AudioSettings")]
     public AudioSource audioSource;
     public AudioSource attackSource;
     public AudioClip walk;

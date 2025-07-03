@@ -1145,6 +1145,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 3
   rotationSpeed: 720
+  noWalkableMask:
+    serializedVersion: 2
+    m_Bits: 256
+  rayLength: 0.5
+  repelForce: 20
   audioSource: {fileID: 0}
   walk: {fileID: 0}
   run: {fileID: 0}
