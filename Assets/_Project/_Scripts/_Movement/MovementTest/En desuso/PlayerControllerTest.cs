@@ -12,17 +12,10 @@ public class PlayerControllerTest : MonoBehaviour
     private Rigidbody rb;
     private Vector3 inputDirection;
 
-    [Header("Control L�mites")]
-    private Vector3 lastPosition;
-    public LayerMask noWalkableMask;
-    public float rayLength = 0.5f;
-    public float repelForce = 10f;
-
-    Animator animator;
+    public Animator animator;
 
     void Start()
     {
-        lastPosition = transform.position;
         rb = GetComponent<Rigidbody>();
         
         //animator = GetComponent<Animator>();
@@ -31,19 +24,6 @@ public class PlayerControllerTest : MonoBehaviour
 
     void Update()
     {
-        bool isTouchingNoWalkable = Physics.Raycast(
-        transform.position + Vector3.up * 0.5f, // origen ligeramente elevado
-        Vector3.down,
-        out RaycastHit hit,
-        rayLength,
-        noWalkableMask
-    );
-
-        if (!isTouchingNoWalkable)
-        {
-            lastPosition = transform.position;
-        }
-
         // Obtener input de movimiento (horizontal y vertical)
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
@@ -111,48 +91,6 @@ public class PlayerControllerTest : MonoBehaviour
                 targetRotation = Quaternion.LookRotation(moveDir * -1);
             else targetRotation = Quaternion.LookRotation(moveDir);
             rb.rotation = Quaternion.RotateTowards(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject.layer == LayerMask.NameToLayer("NoWalkable"))
-        {
-            Vector3 directionAway = (lastPosition - transform.position).normalized;
-            rb.AddForce(directionAway * repelForce, ForceMode.Impulse);
-        }            
-    }
-
-    [Header("AudioSettings")]
-    public AudioSource audioSource;
-    public AudioClip walk;
-    public AudioClip run;
-
-    public void PlayWalk()
-    {
-        if (audioSource && walk)
-        {
-            if (audioSource.clip != walk || !audioSource.isPlaying)
-            {
-                audioSource.clip = walk;
-                audioSource.loop = true;
-                audioSource.Play();
-            }
-        }
-    }
-    public void PlayRun()
-    {
-        if (audioSource && run)
-        {
-            audioSource.clip = run;
-            audioSource.Play();
-        }
-    }
-    public void Stop()
-    {
-        if (audioSource && audioSource.isPlaying)
-        {
-            audioSource.Stop(); 
         }
     }
 }

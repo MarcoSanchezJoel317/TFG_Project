@@ -27,8 +27,6 @@ public class CrowAnimation : MonoBehaviour
             //animator.SetBool("Attacking", true);
             if (crowAI.agent.remainingDistance < 5f)
                 ChangeAltitude(minAltitude);
-
-            PlayAttack();
         }
         else if (animator.GetBool("Attacking"))
         {
@@ -60,42 +58,6 @@ public class CrowAnimation : MonoBehaviour
 
             yield return null;
         }        
-    }
-
-
-    [Header("AudioSettings")]
-    public AudioSource audioSource;
-    public AudioSource attackSource;
-    public AudioClip fly;
-    public AudioClip attack;
-
-    public void PlayFly()
-    {
-        if (audioSource && fly)
-        {
-            if (audioSource.clip != fly || !audioSource.isPlaying)
-            {
-                audioSource.clip = fly;
-                audioSource.loop = true;
-                audioSource.Play();
-            }
-        }
-    }
-
-    public void PlayAttack()
-    {
-        if (attackSource && attack)
-        {
-            if (!attackSource.isPlaying)
-                attackSource.PlayOneShot(attack);
-        }
-    }
-    public void Stop()
-    {
-        if (audioSource && audioSource.isPlaying)
-        {
-            audioSource.Stop();
-        }
     }
 
 }

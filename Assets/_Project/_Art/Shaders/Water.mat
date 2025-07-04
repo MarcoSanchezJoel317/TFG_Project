@@ -159,7 +159,7 @@ Material:
     - _Surface: 0
     - _SurfaceDistortionAmount: 0.067
     - _SurfaceNoiseCutoff: 0.013
-    - _WaveIntensity: 0.07
+    - _WaveIntensity: 0.009
     - _WaveSpeed: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
