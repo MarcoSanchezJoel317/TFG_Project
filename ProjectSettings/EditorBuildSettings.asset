@@ -9,14 +9,12 @@ EditorBuildSettings:
     path: Assets/_Project/_Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/_Project/_Scenes/_Scenarios/Meadow/Meadow_V0.0.0.unity
-    guid: 37efaae8f39b17f498df91674e1af08f
+    path: Assets/_Project/_Scenes/_Menu/Menu.unity
+    guid: b09655e27926929449f046becfd04902
   - enabled: 1
-    path: Assets/_Project/_Scenes/_Scenarios/ProceduralMap/AutoPath_V0.1.1.unity
-    guid: 9d23f90e6ce271d4bb3301d989856677
-  - enabled: 1
-    path: Assets/_Project/_Scenes/_Scenarios/Forest/Forest_V0.0.0.unity
-    guid: 78f984ce66d5b84408a9631c01e058e8
+    path: Assets/_Project/_Scenes/_Testing/DebugRoom.unity
+    guid: 750fc46bef214a542bfbb9affd333222
   m_configObjects:
-    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.addressableassets: {fileID: 11400000, guid: db64eb4e0d7c9cf45be4ca783bafbd3a, type: 2}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
   m_UseUCBPForAssetBundles: 0

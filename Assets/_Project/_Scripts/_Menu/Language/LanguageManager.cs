@@ -1,77 +1,97 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Singleton que gestiona la localización del juego.
+///  Carga traducciones desde ScriptableObjects.
+///  Dispara OnLanguageChanged cuando cambia el idioma.
+/// </summary>
+/// <version>1.1 – 2025-06-13</version>
+[DefaultExecutionOrder(-100)]
 public class LanguageManager : MonoBehaviour
 {
-    public static LanguageManager Instance; // Patrón Singleton
+    [Tooltip("Asignar un LanguageData por cada idioma soportado.")]
+    [SerializeField] private LanguageData[] _languages;
 
-    public LanguageData[] languages; // Array de idiomas (ES, EN, etc.)
     private int _currentLanguageIndex = 0;
+    private Dictionary<TextKey, string> _textLookup = new Dictionary<TextKey, string>();
 
-    // Cambia el idioma (ej: desde el dropdown)
-    private Dictionary<TextKey, string> _textLookup; // Diccionario para textos
+    public static LanguageManager Instance { get; private set; }
+    public event Action OnLanguageChanged;
 
-    private void Start()
-    {
-        
-
-    }
+    #region Ciclo de vida
 
     private void Awake()
     {
-        _currentLanguageIndex = PlayerPrefs.GetInt("LanguageIndex", 0); // Carga el último idioma (0 por defecto)
-        CustomLogger.Log(this, "Hola Hola");
-        //Debug.Log("Hola Hola");
-        SetLanguage(_currentLanguageIndex);
-        Debug.Log("<color=yellow> Ciao ciao");
-        // Singleton: Solo una instancia en todo el juego
-        if (Instance == null)
+        // Singleton
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // Persiste entre escenas
+            Destroy(gameObject);
+            return;
         }
-        else
-        {
-            Destroy(gameObject); // Destruye duplicados
-        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        // Validación de configuración mínima
+        if (_languages == null || _languages.Length == 0)
+            Debug.LogError("[LanguageManager] No hay LanguageData asignados.");
+
+        // No hacemos SetLanguage aquí: lo invocará SettingsManager en su Start.
     }
 
-    
+    #endregion
 
+    #region API pública
+
+    /// <summary>
+    /// Cambia el idioma activo y reconstruye el diccionario interno.
+    /// </summary>
+    /// <param name="index">Índice del idioma en el array _languages.</param>
     public void SetLanguage(int index)
     {
-        _currentLanguageIndex = Mathf.Clamp(index, 0, languages.Length - 1);
+        // Clamp para evitar índices inválidos
+        _currentLanguageIndex = Mathf.Clamp(index, 0, _languages.Length - 1);
+
+        // Guardamos la elección
         PlayerPrefs.SetInt("LanguageIndex", _currentLanguageIndex);
         PlayerPrefs.Save();
 
-        // Llenar el diccionario
-        _textLookup = new Dictionary<TextKey, string>();
-        foreach (var entry in languages[_currentLanguageIndex].texts)
-        {
-            _textLookup[entry.key] = entry.value;
-            print(entry.key);
-            print(entry.value);
-        }
-    }
-    // Obtiene el texto traducido (ej: "start" → "Empezar")
+        // Reconstruimos el diccionario
+        _textLookup = _languages[_currentLanguageIndex]
+            .texts
+            .ToDictionary(entry => entry.key, entry => entry.value);
 
+        // Notificamos a todos los suscriptores
+        OnLanguageChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// Recupera el texto traducido para la clave indicada.
+    /// </summary>
+    /// <param name="key">Clave definida en TextKey.</param>
+    /// <returns>Texto traducido, o el nombre de la clave si falta traducción.</returns>
     public string GetText(TextKey key)
     {
-        foreach (var entry in _textLookup.Values)
-        {
-            print(entry);
-        }
-        
-        if (_textLookup.TryGetValue(key, out string value))
+        if (_textLookup.TryGetValue(key, out var value))
             return value;
 
-        Debug.LogError($"Clave '{key}' no encontrada.");
-        return "ERROR";
+        Debug.LogWarning($"[LanguageManager] Falta traducción para la clave: {key}");
+        return key.ToString();
     }
 
+    /// <summary>
+    /// Índice del idioma actualmente activo (0-based).
+    /// </summary>
+    public int GetCurrentLanguageIndex() => _currentLanguageIndex;
 
-    public int GetCurrentLanguageIndex()
-    {
-        return _currentLanguageIndex;
-    }
+    /// <summary>
+    /// Lista de idiomas disponibles (lectura).
+    /// </summary>
+    public IReadOnlyList<LanguageData> AvailableLanguages => _languages;
+
+    #endregion
 }
+
+

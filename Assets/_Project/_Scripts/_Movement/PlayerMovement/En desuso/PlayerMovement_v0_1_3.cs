@@ -49,9 +49,6 @@ public class PlayerMovement_v0_1_3 : MonoBehaviour
     [SerializeField]
     private AnimationCurve _accelerationFactorFromDot = AnimationCurve.EaseInOut(-1, 0.1f, 1, 1);
 
-    [Range(5f, 15f)]
-    [SerializeField]
-    private float _gravityScaleDrop = 10f; // "Gravity Scale Drop"
 
     [Space(5)]
     [Header("    Force 💪🏻")]  // Espacios para indentar
@@ -185,9 +182,7 @@ public class PlayerMovement_v0_1_3 : MonoBehaviour
     }
 
 
-    // Añade esta variable (o una curva) en la sección Speed 🚀
-    [Range(0f, 1f)]
-    [SerializeField] private float _strafeSpeedMultiplier = 0.7f; // Factor de velocidad al strafear/atrás (0.7 = 70% de velocidad)
+
 
     // Opcional: Añade una curva para más control sobre la velocidad direccional
     // [SerializeField] AnimationCurve _directionalSpeedFactorFromDot = AnimationCurve.Linear(-1, 0.7f, 1, 1f); // Factor de velocidad basado en Dot(inputDir, characterForward)

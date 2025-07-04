@@ -21,10 +21,36 @@ MonoBehaviour:
   - key: 2
     value: Eixir
   - key: 5
-    value: So
+    value: Tornar
   - key: 9
-    value: "Gr\xE0fics"
+    value: So
   - key: 11
-    value: Tornar al menu
-  - key: 10
     value: Joc
+  - key: 10
+    value: "Gr\xE0fics"
+  - key: 3
+    value: Nova Partida
+  - key: 4
+    value: Carregar Partida
+  - key: 6
+    value: Reprendre
+  - key: 7
+    value: "Tornar al Men\xFA"
+  - key: 8
+    value: Eixir a l'Escriptori
+  - key: 12
+    value: "Tornar al Men\xFA"
+  - key: 13
+    value: Volum Mestre
+  - key: 14
+    value: "Volum de M\xFAsica"
+  - key: 15
+    value: Volum d'Efectes
+  - key: 16
+    value: En Desenvolupament
+  - key: 17
+    value: En Desenvolupament
+  - key: 18
+    value: Idioma
+  - key: 19
+    value: Controlador de joc connectat

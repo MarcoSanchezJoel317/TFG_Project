@@ -21,10 +21,36 @@ MonoBehaviour:
   - key: 2
     value: Salir
   - key: 5
-    value: Sonido
+    value: Volver
   - key: 9
-    value: "Gr\xE1ficos"
+    value: Sonido
   - key: 11
-    value: Volver al menu
-  - key: 10
     value: Juego
+  - key: 10
+    value: "Gr\xE1ficos"
+  - key: 3
+    value: Nueva Partida
+  - key: 4
+    value: Cargar Partida
+  - key: 6
+    value: Reanudar
+  - key: 7
+    value: Volver al Menu
+  - key: 8
+    value: Salir al Escritorio
+  - key: 12
+    value: Volver al Menu
+  - key: 13
+    value: Volumen Maestro
+  - key: 14
+    value: "Volumen de M\xFAsica  "
+  - key: 15
+    value: 'Volumen de Efectos  '
+  - key: 16
+    value: En Desarrollo
+  - key: 17
+    value: En Desarrollo
+  - key: 18
+    value: Idioma
+  - key: 19
+    value: Mando conectado
