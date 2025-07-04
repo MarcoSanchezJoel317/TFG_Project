@@ -140,5 +140,5 @@ public class SheepAI : MonoBehaviour
         Quaternion downRotation = Quaternion.Euler(verticalFOV / 2f, 0, 0);
         Gizmos.DrawLine(origin, origin + upRotation * forward);
         Gizmos.DrawLine(origin, origin + downRotation * forward);
-    }
+    }    
 }

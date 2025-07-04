@@ -26,12 +26,12 @@ public class SheepAnimation : MonoBehaviour
         animator = GetComponent<Animator>();
         parentTransform = transform.parent;
         lastRotation = parentTransform.rotation;
-        LastPos = transform.position;
+        LastPos = parentTransform.position;
         sheepAI = transform.parent.gameObject.GetComponent<SheepAI>();
     }
     private void Update()
     {
-        Vector3 nowPos = transform.position;
+        Vector3 nowPos = parentTransform.position;
         Quaternion nowRotation = transform.rotation;
 
         float XMotion = animator.GetFloat("MotionX");
@@ -67,7 +67,7 @@ public class SheepAnimation : MonoBehaviour
             else
                 animator.SetFloat("MotionX", XMotion - 0.01F);
         }
-
+        LastPos = nowPos;
         lastRotation = nowRotation;
     }
     void FixedUpdate()
@@ -95,5 +95,20 @@ public class SheepAnimation : MonoBehaviour
 
             transform.rotation = Quaternion.Slerp(transform.rotation, finalRotation, alignSpeed * Time.deltaTime);
         }
+    }
+
+    public AudioSource audioSource;
+    public AudioClip walk;
+
+    public void PlayWalk()
+    {
+        if (audioSource && walk)
+        {
+            audioSource.PlayOneShot(walk);
+        }
+    }
+    public void Stop()
+    {
+        audioSource?.Stop();
     }
 }

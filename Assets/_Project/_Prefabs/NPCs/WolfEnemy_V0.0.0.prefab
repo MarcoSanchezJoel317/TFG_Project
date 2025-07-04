@@ -212,6 +212,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WolfDark_PBR
       objectReference: {fileID: 0}
+    - target: {fileID: 3176825970478674063, guid: 0f2017502b075674194cda04b5682900, type: 3}
+      propertyPath: rolloffMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5787893073099188084, guid: 0f2017502b075674194cda04b5682900, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -268,9 +272,19 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 5004618586603961690}
   m_SourcePrefab: {fileID: 100100000, guid: 0f2017502b075674194cda04b5682900, type: 3}
+--- !u!82 &3940792852045280594 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 6470297480854344850, guid: 0f2017502b075674194cda04b5682900, type: 3}
+  m_PrefabInstance: {fileID: 8033189728807494080}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4551210038767011508 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5787893073099188084, guid: 0f2017502b075674194cda04b5682900, type: 3}
+  m_PrefabInstance: {fileID: 8033189728807494080}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &4858756298620981583 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 3176825970478674063, guid: 0f2017502b075674194cda04b5682900, type: 3}
   m_PrefabInstance: {fileID: 8033189728807494080}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &5017384719749189991 stripped
@@ -296,3 +310,8 @@ MonoBehaviour:
     m_Bits: 8
   alignSpeed: 10
   wolfAI: {fileID: 0}
+  audioSource: {fileID: 4858756298620981583}
+  attackSource: {fileID: 3940792852045280594}
+  walk: {fileID: 8300000, guid: b91fbe42b8fda554dab540ba9ef6d608, type: 3}
+  run: {fileID: 8300000, guid: 0c1b17a2fc7093247b6f59882beb1671, type: 3}
+  attack: {fileID: 8300000, guid: 8f1a54cf205b3654abe54c2861848dfe, type: 3}
