@@ -6,19 +6,24 @@ using TMPro;  // Necesario si usas TextMeshPro para la UI
 [RequireComponent(typeof(Animator))]
 public class SheepMovementController : MonoBehaviour
 {
-    [Header("Input")]
+    [Header("Input 🎮")]
     [Tooltip("Acción de movimiento (Vector2) desde el Input System)")]
     [SerializeField] private InputActionReference _movementAction;
     [Tooltip("Acción de sprint (Button) desde el Input System)")]
     [SerializeField] private InputActionReference _sprintAction;
 
-    [Header("Speeds")]
-    [Tooltip("Velocidad de caminata (m/s)")]
+    [Header("Movement Speeds")]
     [SerializeField] private float _walkSpeed = 5f;
-    [Tooltip("Velocidad de sprint (m/s)")]
     [SerializeField] private float _runSpeed = 10f;
 
-    [Header("Energy")]
+    [Header("Animation Speeds")]
+    [Tooltip("Multiplicador de velocidad de la animación de caminar")]
+    [SerializeField] private float _walkAnimationSpeed = 1f;
+    [Tooltip("Multiplicador de velocidad de la animación de sprint")]
+    [SerializeField] private float _runAnimationSpeed = 1.5f;
+
+
+    [Header("Sprint Energy ⚡")]
     [Tooltip("Cantidad máxima de energía para sprint")]
     [SerializeField] private float _maxEnergy = 5f;
     [Tooltip("Unidades de energía consumidas por segundo al sprintar")]
@@ -26,11 +31,11 @@ public class SheepMovementController : MonoBehaviour
     [Tooltip("Unidades de energía regeneradas por segundo cuando no sprinta")]
     [SerializeField] private float _energyRegenRate = 0.5f;
 
-    [Header("UI")]
+    [Header("UI 🇹")]
     [Tooltip("Texto de la UI (TextMeshPro) para mostrar la energía actual")]
     [SerializeField] private TMP_Text _energyText;
 
-    [Header("Rotation")]
+    [Header("Rotation 🔄")]
     [Tooltip("Velocidad de giro suave mientras se mueve (grados/s)")]
     [SerializeField] private float _rotationSpeed = 360f;
     [Tooltip("Velocidad de giro rápido cuando está prácticamente parado")]
@@ -41,17 +46,38 @@ public class SheepMovementController : MonoBehaviour
     [Tooltip("Umbral de velocidad (m/s) por debajo del cual se considera parado")]
     [SerializeField] private float _stopThreshold = 0.1f;
 
-    [Header("Slope Alignment")]
-    [Tooltip("Altura desde el pivote para el raycast de pendiente")]
-    [SerializeField] private float _slopeRayHeight = 1f;
+    [Header("Turn & Move")]
+    [Tooltip("Ángulo (grados) por debajo del cual ya consideramos que estamos alineados y podemos movernos")]
+    [SerializeField] private float _rotationThreshold = 5f;
+
+
+
+
+    [Header("Slope Alignment 🏔️")]
+
     [Tooltip("Distancia máxima del raycast hacia abajo")]
     [SerializeField] private float _slopeRayDistance = 2f;
-    [Tooltip("Velocidad de interpolación de la inclinación al terreno")]
-    [SerializeField] private float _slopeAlignSpeed = 5f;
+    [SerializeField] private LayerMask _groundMask;
+
+
+
 
     // Componentes
     private Rigidbody _rb;
     private Animator _animator;
+
+    // Hashes para estados
+    private int _walkTreeHash;
+    private int _runTreeHash;
+
+    // Hashes para parámetros de Animator
+    private int _waitParam;
+    private int _walkParam;
+    private int _runParam;
+    private int _xSpeedParam;
+    private int _ySpeedParam;
+    private int _walkAnimSpeedParam;
+    private int _runAnimSpeedParam;
 
     // Estado interno
     private Vector2 _moveInput;       // Input 2D
@@ -59,11 +85,31 @@ public class SheepMovementController : MonoBehaviour
     private float _energy;          // Energía actual
     private Vector3 _inputDirWorld;    // Dirección en mundo
 
+    private RaycastHit _hitInfo;
+
+
+    // Umbral estático
+    private static readonly float _inputThreshold = 0.001f;
+
+
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
         _energy = _maxEnergy;
+
+        //Animation to hash
+        _walkTreeHash = Animator.StringToHash("Walk Tree");
+        _runTreeHash = Animator.StringToHash("Run Tree");
+
+        _waitParam = Animator.StringToHash("Wait");
+        _walkParam = Animator.StringToHash("Walk");
+        _runParam = Animator.StringToHash("Run");
+        _xSpeedParam = Animator.StringToHash("XSpeed");
+        _ySpeedParam = Animator.StringToHash("YSpeed");
+        _walkAnimSpeedParam = Animator.StringToHash("WalkAnimationSpeed");
+        _runAnimSpeedParam = Animator.StringToHash("RunAnimationSpeed");
+
     }
 
     private void OnEnable()
@@ -88,12 +134,139 @@ public class SheepMovementController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!IsInMoveState()) return;
+        // Sin input, nada
+        if (_inputDirWorld.sqrMagnitude < 0.001f)
+            return;
 
-        HandleMovement();
-        HandleRotation();
-        HandleSlopeAlignment();
+        // Obtenemos el StateInfo una sola vez
+        var stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+
+        // Si estamos dentro de cualquier estado taggeado "Wait", no rotamos ni movemos
+        if (stateInfo.IsTag("Waiting"))
+            return;
+
+        // 1) Si estamos parados, rotamos en parado
+        if (_rb.linearVelocity.magnitude <= _stopThreshold)
+        {
+            HandleMovement();
+            //float angle = HandleStationaryRotation();
+            //// Y sólo movemos si ya pasamos el umbral
+            //if (angle <= _rotationThreshold && IsInMoveState())
+            //{
+            //    HandleMovement();
+                
+            //}
+        }
+        else
+        {
+            // 2) Si ya íbamos en marcha, rotamos y movemos a la vez
+            //HandleRotation();
+            if (IsInMoveState())
+            {
+                HandleMovement();
+                
+            }
+        }
     }
+    #region Metodos de movimiento
+
+    // -------------------- MÉTODOS DE MOVIMIENTO --------------------
+
+    /// <summary>
+    /// 5) Desplaza el Rigidbody según la dirección y velocidad,
+    ///    usando walkSpeed si estamos blendando entre Walk y Run.
+    /// </summary>
+    private void HandleMovement()
+    {
+        // 0) Salimos si no hay input significativo
+        if (_inputDirWorld.sqrMagnitude <= _inputThreshold)
+            return;
+
+        // 1) Determinamos velocidad según Animator
+        float speed = GetCurrentSpeed();
+
+        // 2) Calculamos dirección de movimiento sobre la pendiente
+        Vector3 moveDir = _inputDirWorld.normalized;
+        Vector3 groundNormal = GetGroundNormal(out bool hitGround);
+        if (hitGround)
+            moveDir = Vector3.ProjectOnPlane(moveDir, groundNormal).normalized;
+
+        // 3) Movimiento del Rigidbody
+        Vector3 targetPos = _rb.position + moveDir * speed * Time.fixedDeltaTime;
+        _rb.MovePosition(targetPos);
+
+        // 4) Rotación según pendiente
+        HandleRotation(moveDir, hitGround ? groundNormal : Vector3.up);
+    }
+
+
+
+    #endregion
+
+    #region Metodos de Rotación
+
+    // -------------------- MÉTODOS DE ROTACIÓN --------------------
+
+    /// <summary>
+    /// Gira la oveja en movimiento hacia _inputDirWorld, inclinándose según la pendiente.
+    /// </summary>
+    private void HandleRotation(Vector3 forwardDir, Vector3 upDir)
+    {
+        Quaternion desired = Quaternion.LookRotation(forwardDir, upDir);
+        Quaternion smooth = Quaternion.RotateTowards(
+            _rb.rotation,
+            desired,
+            _rotationSpeed * Time.fixedDeltaTime
+        );
+        _rb.MoveRotation(smooth);
+    }
+
+
+
+    /// <summary>
+    /// Gira la oveja en su sitio hacia _inputDirWorld, inclinándose según la pendiente.
+    /// Devuelve el ángulo restante para alinearse (en grados).
+    /// </summary>
+    private float HandleStationaryRotation()
+
+    {
+
+        // Calcula el ángulo actual
+
+        float angle = Vector3.Angle(transform.forward, _inputDirWorld);
+
+        if (angle > 0.01f)
+
+        {
+
+            // Gira más rápido en parado si quieres:
+
+            float rotSpd = _rotationSpeedStopped;
+
+            Quaternion target = Quaternion.LookRotation(_inputDirWorld, Vector3.up);
+
+            transform.rotation = Quaternion.RotateTowards(
+
+              transform.rotation,
+
+              target,
+
+              rotSpd * Time.fixedDeltaTime
+
+            );
+
+        }
+
+        return angle;
+
+    }
+
+
+
+
+    #endregion
+
+    #region Metodos de INPUT
 
     // -------------------- MÉTODOS MODULARES --------------------
 
@@ -116,51 +289,68 @@ public class SheepMovementController : MonoBehaviour
             : Vector3.zero;
     }
 
+    #endregion
+
+    #region Metodos de SPRINT
+    
+    // -------------------- MÉTODOS DE SPRINT --------------------
+
     /// <summary>
     /// 2) Gestiona la energía: se drena al sprintar y se regenera al no sprintar.
     ///     Ahora sólo permite sprintar si _energy >= 1 (condición comentada para futura eliminación).
     /// </summary>
+    /// <summary>
+    /// Gestiona la energía: se drena solo si estamos en el estado de sprint real
+    /// (animación “Run Tree” activa) y además hay movimiento.
+    /// </summary>
     private void UpdateEnergyAndSprint()
     {
-        // Sólo sprintar si queda al menos 1 de energía
-        // if (_energy < 1f) _wantsSprint = false;  
+        // Comprobamos si el Animator está realmente en “Run Tree”
+        bool isInRunTree = _animator.GetCurrentAnimatorStateInfo(0).IsName("Run Tree");
+        // Y además tenemos input de movimiento
+        bool isMoving = _inputDirWorld.sqrMagnitude > 0.001f;
 
-        if (_wantsSprint && _inputDirWorld.sqrMagnitude > 0.001f && _energy > 0f /*&& _energy >= 1f*/)
+        if (isInRunTree && isMoving && _energy > 0f)
         {
-            // Consumimos energía mientras sprintamos
+            // Consumimos energía solo mientras ejecutamos la animación de sprint en marcha
             _energy -= _sprintDrainRate * Time.deltaTime;
             if (_energy <= 0f)
             {
-                // Si se agota, bloqueamos el sprint y dejamos energía en cero
                 _energy = 0f;
-                _wantsSprint = false;
+                _wantsSprint = false;  // bloquea intentos de sprint adicionales
             }
         }
         else
         {
-            // Regeneramos energía gradualmente
+            // Regeneramos energía si no estamos corriendo
             _energy = Mathf.Min(_maxEnergy, _energy + _energyRegenRate * Time.deltaTime);
         }
     }
 
+    #endregion
+
+    #region Metodos de actualizacion
+
+    // -------------------- MÉTODOS DE ACTUALZACIÓN --------------------
 
     /// <summary>
     /// 3) Actualiza los bools y floats del Animator para las animaciones.
     /// </summary>
     private void UpdateAnimator()
     {
-        bool isMoving = _inputDirWorld.sqrMagnitude > 0.001f;
+        bool isMoving = _inputDirWorld.sqrMagnitude > _inputThreshold;
         bool isRunning = isMoving && _wantsSprint;
 
-        _animator.SetBool("Wait", !isMoving);
-        _animator.SetBool("Walk", isMoving && !isRunning);
-        _animator.SetBool("Run", isRunning);
+        // Usamos SetBool/SetFloat con hashes en vez de strings
+        _animator.SetBool(_waitParam, !isMoving);
+        _animator.SetBool(_walkParam, isMoving && !isRunning);
+        _animator.SetBool(_runParam, isRunning);
 
-        _animator.SetFloat("XSpeed", _moveInput.x, 0.1f, Time.deltaTime);
-        _animator.SetFloat("YSpeed", isMoving ? 1f : 0f, 0.1f, Time.deltaTime);
+        _animator.SetFloat(_xSpeedParam, _moveInput.x, 0.1f, Time.deltaTime);
+        _animator.SetFloat(_ySpeedParam, isMoving ? 1f : 0f, 0.1f, Time.deltaTime);
 
-        float animSpeed = isRunning ? (_runSpeed / _walkSpeed) : 1f;
-        _animator.SetFloat("AnimationSpeed", animSpeed);
+        _animator.SetFloat(_walkAnimSpeedParam, isRunning ? 1f : _walkAnimationSpeed);
+        _animator.SetFloat(_runAnimSpeedParam, isRunning ? _runAnimationSpeed : 1f);
     }
 
     /// <summary>
@@ -168,9 +358,18 @@ public class SheepMovementController : MonoBehaviour
     /// </summary>
     private void UpdateUI()
     {
-        if (_energyText != null)
-            _energyText.text = $"Energía: {_energy:0.0} / {_maxEnergy}";
+        // Early-out si no hay texto asignado
+        if (_energyText == null) return;
+
+        // Formateo simple y directo
+        _energyText.text = $"Energía: {_energy:0.0} / {_maxEnergy}";
     }
+
+    #endregion
+
+    #region Metodos auxiliares
+
+    // -------------------- MÉTODOS AUXILIARES --------------------
 
     /// <summary>
     /// Comprueba si el Animator está en el estado de caminata o sprint.
@@ -178,59 +377,41 @@ public class SheepMovementController : MonoBehaviour
     private bool IsInMoveState()
     {
         var st = _animator.GetCurrentAnimatorStateInfo(0);
-        return st.IsName("Walk Tree") || st.IsName("Run Tree");
+        int hash = st.shortNameHash;
+        return hash == _walkTreeHash || hash == _runTreeHash;
     }
 
-    /// <summary>
-    /// 5) Desplaza el Rigidbody según la dirección y velocidad.
-    /// </summary>
-    private void HandleMovement()
+    private float GetCurrentSpeed()
     {
-        float speed = _animator.GetBool("Run") ? _runSpeed : _walkSpeed;
-        if (_inputDirWorld.sqrMagnitude > 0.001f)
+        var state = _animator.GetCurrentAnimatorStateInfo(0);
+        bool running = !_animator.IsInTransition(0) && state.shortNameHash == _runTreeHash;
+        return running ? _runSpeed : _walkSpeed;
+    }
+
+
+    /// <summary>
+    /// Obtiene la normal del terreno justo debajo de la oveja.
+    /// </summary>
+    private Vector3 GetGroundNormal(out bool hitGround)
+    {
+        Vector3 origin = transform.position + Vector3.up;
+        if (Physics.Raycast(origin, Vector3.down, out _hitInfo, _slopeRayDistance, _groundMask))
         {
-            Vector3 target = _rb.position + _inputDirWorld * speed * Time.fixedDeltaTime;
-            _rb.MovePosition(target);
+            hitGround = true;
+            return _hitInfo.normal;
+        }
+        else
+        {
+            hitGround = false;
+            Debug.LogWarning($"Slope ray missed at {origin}", this);
+            return Vector3.up;
         }
     }
 
-    /// <summary>
-    /// 6) Gira el modelo suavemente, con "freno antes de girar" si se da la vuelta.
-    /// </summary>
-    private void HandleRotation()
-    {
-        Vector3 curFwd = transform.forward;
-        float velMag = _rb.linearVelocity.magnitude;
-        float angle = Vector3.Angle(curFwd, _inputDirWorld);
 
-        float rotSpd = (velMag <= _stopThreshold && angle > _brakeAngle)
-            ? _rotationSpeedStopped
-            : _rotationSpeed;
+    #endregion
 
-        if (_inputDirWorld.sqrMagnitude > 0.001f)
-        {
-            Quaternion tgt = Quaternion.LookRotation(_inputDirWorld, Vector3.up);
-            _rb.MoveRotation(Quaternion.RotateTowards(
-                _rb.rotation, tgt, rotSpd * Time.fixedDeltaTime
-            ));
-        }
-    }
-
-    /// <summary>
-    /// 7) Alinea el modelo con la pendiente del terreno.
-    /// </summary>
-    private void HandleSlopeAlignment()
-    {
-        Vector3 origin = transform.position + Vector3.up * _slopeRayHeight;
-        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, _slopeRayDistance))
-        {
-            // Calcula la rotación que alinea el "up" con la normal del terreno
-            Quaternion align = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation, align, _slopeAlignSpeed * Time.fixedDeltaTime
-            );
-        }
-    }
+    #region Metodos de acceso externo
 
     // -------------------- MÉTODOS de acceso externo --------------------
 
@@ -249,6 +430,8 @@ public class SheepMovementController : MonoBehaviour
     {
         _maxEnergy = energy;
     }
+
+    #endregion
 }
 
 
