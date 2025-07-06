@@ -40,9 +40,7 @@ public class SheepMovementController : MonoBehaviour
     [SerializeField] private float _rotationSpeed = 360f;
     [Tooltip("Velocidad de giro rápido cuando está prácticamente parado")]
     [SerializeField] private float _rotationSpeedStopped = 720f;
-    [Tooltip("Ángulo (grados) a partir del cual empieza a frenar antes de girar")]
-    [Range(0f, 180f)]
-    [SerializeField] private float _brakeAngle = 120f;
+    
     [Tooltip("Umbral de velocidad (m/s) por debajo del cual se considera parado")]
     [SerializeField] private float _stopThreshold = 0.1f;
 
@@ -70,7 +68,7 @@ public class SheepMovementController : MonoBehaviour
     private int _walkTreeHash;
     private int _runTreeHash;
 
-    // Hashes para parámetros de Animator
+    // Hashes para parámetros de Animator https://docs.unity3d.com/6000.2/Documentation/ScriptReference/Animator.StringToHash.html
     private int _waitParam;
     private int _walkParam;
     private int _runParam;
@@ -134,6 +132,7 @@ public class SheepMovementController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        print(_rb.linearVelocity.magnitude);
         // Sin input, nada
         if (_inputDirWorld.sqrMagnitude < 0.001f)
             return;
@@ -145,29 +144,32 @@ public class SheepMovementController : MonoBehaviour
         if (stateInfo.IsTag("Waiting"))
             return;
 
+        //HandleMovement();
         // 1) Si estamos parados, rotamos en parado
         if (_rb.linearVelocity.magnitude <= _stopThreshold)
         {
-            HandleMovement();
-            //float angle = HandleStationaryRotation();
-            //// Y sólo movemos si ya pasamos el umbral
-            //if (angle <= _rotationThreshold && IsInMoveState())
-            //{
-            //    HandleMovement();
-                
-            //}
+            //HandleMovement();
+            float angle = HandleStationaryRotation();
+            // Y sólo movemos si ya pasamos el umbral
+            if (angle <= _rotationThreshold && IsInMoveState())
+            {
+                HandleMovement();
+
+            }
         }
         else
         {
             // 2) Si ya íbamos en marcha, rotamos y movemos a la vez
-            //HandleRotation();
-            if (IsInMoveState())
-            {
-                HandleMovement();
-                
-            }
+            HandleMovement();
+            //if (IsInMoveState())
+            //{
+            //    HandleMovement();
+
+            //}
         }
     }
+
+
     #region Metodos de movimiento
 
     // -------------------- MÉTODOS DE MOVIMIENTO --------------------
@@ -178,24 +180,30 @@ public class SheepMovementController : MonoBehaviour
     /// </summary>
     private void HandleMovement()
     {
-        // 0) Salimos si no hay input significativo
         if (_inputDirWorld.sqrMagnitude <= _inputThreshold)
             return;
 
-        // 1) Determinamos velocidad según Animator
         float speed = GetCurrentSpeed();
 
-        // 2) Calculamos dirección de movimiento sobre la pendiente
         Vector3 moveDir = _inputDirWorld.normalized;
         Vector3 groundNormal = GetGroundNormal(out bool hitGround);
         if (hitGround)
             moveDir = Vector3.ProjectOnPlane(moveDir, groundNormal).normalized;
 
-        // 3) Movimiento del Rigidbody
-        Vector3 targetPos = _rb.position + moveDir * speed * Time.fixedDeltaTime;
-        _rb.MovePosition(targetPos);
+        Vector3 desiredVelocity = moveDir * speed;
 
-        // 4) Rotación según pendiente
+        // Solo afectamos el movimiento horizontal (X y Z)
+        Vector3 currentVelocity = _rb.linearVelocity;
+        Vector3 velocityChange = new Vector3(
+            desiredVelocity.x - currentVelocity.x,
+            0f,  // No tocar la componente vertical
+            desiredVelocity.z - currentVelocity.z
+        );
+
+        Vector3 force = (_rb.mass * velocityChange) / Time.fixedDeltaTime;
+        _rb.AddForce(force, ForceMode.Force);
+
+
         HandleRotation(moveDir, hitGround ? groundNormal : Vector3.up);
     }
 
@@ -228,37 +236,35 @@ public class SheepMovementController : MonoBehaviour
     /// Devuelve el ángulo restante para alinearse (en grados).
     /// </summary>
     private float HandleStationaryRotation()
-
     {
+        // Asegúrate de tener una referencia al Rigidbody
+        // private Rigidbody _rigidbody;
+        // void Awake() { _rigidbody = GetComponent<Rigidbody>(); }
+        Vector3 flatForward = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized;
+        float angle = Vector3.Angle(flatForward, _inputDirWorld);
+        Vector3 moveDir = _inputDirWorld.normalized;
+        Vector3 groundNormal = GetGroundNormal(out bool hitGround);
+        if (hitGround)
+            moveDir = Vector3.ProjectOnPlane(moveDir, groundNormal).normalized;
 
-        // Calcula el ángulo actual
+        HandleRotation(moveDir, hitGround ? groundNormal : Vector3.up);
 
-        float angle = Vector3.Angle(transform.forward, _inputDirWorld);
+        //if (angle > 0.01f)
+        //{
+        //    float rotSpd = _rotationSpeedStopped;
+        //    Quaternion target = Quaternion.LookRotation(_inputDirWorld, Vector3.up);
 
-        if (angle > 0.01f)
+        //    // Obtener la rotación interpolada
+        //    Quaternion newRotation = Quaternion.RotateTowards(
+        //        _rb.rotation, // Usar la rotación del Rigidbody
+        //        target,
+        //        rotSpd * Time.fixedDeltaTime
+        //    );
 
-        {
-
-            // Gira más rápido en parado si quieres:
-
-            float rotSpd = _rotationSpeedStopped;
-
-            Quaternion target = Quaternion.LookRotation(_inputDirWorld, Vector3.up);
-
-            transform.rotation = Quaternion.RotateTowards(
-
-              transform.rotation,
-
-              target,
-
-              rotSpd * Time.fixedDeltaTime
-
-            );
-
-        }
-
+        //    // Mover el Rigidbody a la nueva rotación
+        //    _rb.MoveRotation(newRotation);
+        //}
         return angle;
-
     }
 
 
@@ -432,6 +438,29 @@ public class SheepMovementController : MonoBehaviour
     }
 
     #endregion
+
+    private void OnDrawGizmos()
+    {
+        Vector3 origin = transform.position;
+        float drawLength = 2f;
+
+        // Dirección forward del transform en verde
+        Gizmos.color = Color.green;
+        Vector3 flatForward = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized;
+        Vector3 forwardDir = flatForward * drawLength;
+
+        Gizmos.DrawLine(origin, origin + forwardDir);
+        Gizmos.DrawSphere(origin + forwardDir, 0.05f);
+
+        // Dirección de input en rojo
+        Gizmos.color = Color.red;
+        if (_inputDirWorld.sqrMagnitude > 0f)
+        {
+            Vector3 inputDir = _inputDirWorld.normalized * drawLength;
+            Gizmos.DrawLine(origin, origin + inputDir);
+            Gizmos.DrawSphere(origin + inputDir, 0.05f);
+        }
+    }
 }
 
 

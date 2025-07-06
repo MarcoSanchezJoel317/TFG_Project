@@ -303,7 +303,7 @@ GameObject:
   - component: {fileID: 167128905}
   - component: {fileID: 167128904}
   - component: {fileID: 167128903}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PolyShape
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1116,7 +1116,7 @@ GameObject:
   - component: {fileID: 307385349}
   - component: {fileID: 307385348}
   - component: {fileID: 307385347}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3061,7 +3061,7 @@ GameObject:
   - component: {fileID: 458298915}
   - component: {fileID: 458298914}
   - component: {fileID: 458298913}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3845,6 +3845,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Espadas_3
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 50dee4af2d9240e4eacde39991d42e2e, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3859,7 +3863,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 584229960}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Obstacles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3961,6 +3965,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Espadas_1
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 50dee4af2d9240e4eacde39991d42e2e, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4006,7 +4014,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 714484163}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Environment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4213,7 +4221,7 @@ GameObject:
   - component: {fileID: 853061728}
   - component: {fileID: 853061727}
   - component: {fileID: 853061726}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: Arch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4817,6 +4825,26 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1822093789610820292, guid: 444c44d5730f92a4b9cd2f9cf2d23f32, type: 3}
+      propertyPath: m_CullingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1822093789610820292, guid: 444c44d5730f92a4b9cd2f9cf2d23f32, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653386584818168687, guid: 444c44d5730f92a4b9cd2f9cf2d23f32, type: 3}
+      propertyPath: m_Drag
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653386584818168687, guid: 444c44d5730f92a4b9cd2f9cf2d23f32, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653386584818168687, guid: 444c44d5730f92a4b9cd2f9cf2d23f32, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4617344895555032787, guid: 444c44d5730f92a4b9cd2f9cf2d23f32, type: 3}
       propertyPath: m_LocalPosition.x
       value: 108.83
@@ -4865,9 +4893,13 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5482498693161705511, guid: 444c44d5730f92a4b9cd2f9cf2d23f32, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4617344895555032787, guid: 444c44d5730f92a4b9cd2f9cf2d23f32, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 2014731751}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1351434705181996750, guid: 444c44d5730f92a4b9cd2f9cf2d23f32, type: 3}
       insertIndex: -1
@@ -4954,7 +4986,7 @@ GameObject:
   - component: {fileID: 1121081349}
   - component: {fileID: 1121081348}
   - component: {fileID: 1121081347}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: Stairs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9387,9 +9419,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _movementAction: {fileID: -6622010300307445888, guid: 9e0172ba876549547a81fc600dab30c3, type: 3}
   _sprintAction: {fileID: 6409635640629513779, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
-  _walkSpeed: 3
-  _runSpeed: 10
-  _walkAnimationSpeed: 1.4
+  _walkSpeed: 5
+  _runSpeed: 15
+  _walkAnimationSpeed: 1.5
   _runAnimationSpeed: 1.5
   _maxEnergy: 15
   _sprintDrainRate: 1
@@ -9397,12 +9429,12 @@ MonoBehaviour:
   _energyText: {fileID: 397239040}
   _rotationSpeed: 360
   _rotationSpeedStopped: 500
-  _brakeAngle: 120
-  _stopThreshold: 0.1
+  _stopThreshold: 0.01
   _rotationThreshold: 10
-  _slopeRayHeight: 1
   _slopeRayDistance: 5
-  _slopeAlignSpeed: 5
+  _groundMask:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!4 &1440003627 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4617344895555032787, guid: 444c44d5730f92a4b9cd2f9cf2d23f32, type: 3}
@@ -9496,7 +9528,7 @@ Transform:
   m_GameObject: {fileID: 1443593676}
   serializedVersion: 2
   m_LocalRotation: {x: 0.130965, y: 0.0074190986, z: -0.0009801117, w: 0.99135876}
-  m_LocalPosition: {x: 108.83, y: 3.567058, z: -115.197174}
+  m_LocalPosition: {x: 108.83, y: 5.0521784, z: -115.43618}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9525,8 +9557,8 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
-  m_Antialiasing: 0
+  m_RenderPostProcessing: 1
+  m_Antialiasing: 2
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
@@ -9592,7 +9624,7 @@ GameObject:
   - component: {fileID: 1570799010}
   - component: {fileID: 1570799009}
   - component: {fileID: 1570799008}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: Stairs (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12885,7 +12917,7 @@ GameObject:
   - component: {fileID: 1600374524}
   - component: {fileID: 1600374523}
   - component: {fileID: 1600374522}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: Stairs (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13400,7 +13432,7 @@ GameObject:
   - component: {fileID: 1622622785}
   - component: {fileID: 1622622784}
   - component: {fileID: 1622622783}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: Prism
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14165,7 +14197,7 @@ GameObject:
   - component: {fileID: 1728533476}
   - component: {fileID: 1728533475}
   - component: {fileID: 1728533474}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: PolyShape
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14968,12 +15000,12 @@ MonoBehaviour:
   _energyText: {fileID: 397239040}
   _rotationSpeed: 360
   _rotationSpeedStopped: 500
-  _brakeAngle: 120
   _stopThreshold: 0.1
   _rotationThreshold: 10
-  _slopeRayHeight: 1
   _slopeRayDistance: 5
-  _slopeAlignSpeed: 5
+  _groundMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!43 &2000002737
 Mesh:
   m_ObjectHideFlags: 0
@@ -15139,6 +15171,37 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &2014731750
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2014731751}
+  m_Layer: 0
+  m_Name: Camara
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2014731751
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2014731750}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.663, z: -0.1067}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1440003627}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2037078639
 GameObject:
   m_ObjectHideFlags: 0
@@ -15738,7 +15801,7 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 1440003627}
+    TrackingTarget: {fileID: 2014731751}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -15770,7 +15833,7 @@ Transform:
   m_GameObject: {fileID: 2042017429}
   serializedVersion: 2
   m_LocalRotation: {x: 0.13096498, y: 0.0074190986, z: -0.0009801115, w: 0.99135876}
-  m_LocalPosition: {x: 108.83, y: 3.567058, z: -115.197174}
+  m_LocalPosition: {x: 108.83, y: 5.0521784, z: -115.43618}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15884,6 +15947,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Espadas
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 50dee4af2d9240e4eacde39991d42e2e, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15960,6 +16027,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 50dee4af2d9240e4eacde39991d42e2e, type: 3}
       propertyPath: m_Name
       value: Espadas_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 50dee4af2d9240e4eacde39991d42e2e, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
