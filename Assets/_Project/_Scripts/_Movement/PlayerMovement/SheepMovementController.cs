@@ -4,13 +4,15 @@ using TMPro;  // Necesario si usas TextMeshPro para la UI
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Animator))]
-public class SheepMovementController : MonoBehaviour
+public class SheepMovementController : MonoBehaviour, IInputProvider
 {
     [Header("Input 🎮")]
     [Tooltip("Acción de movimiento (Vector2) desde el Input System)")]
     [SerializeField] private InputActionReference _movementAction;
     [Tooltip("Acción de sprint (Button) desde el Input System)")]
     [SerializeField] private InputActionReference _sprintAction;
+
+
 
     [Header("Movement Speeds")]
     [SerializeField] private float _walkSpeed = 5f;
@@ -48,6 +50,10 @@ public class SheepMovementController : MonoBehaviour
     [Tooltip("Ángulo (grados) por debajo del cual ya consideramos que estamos alineados y podemos movernos")]
     [SerializeField] private float _rotationThreshold = 5f;
 
+    [SerializeField]
+    [Tooltip("Longitud con la que se dibuja/computa el punto de input en Gizmos")]
+    private float _drawLength = 3f;
+
 
 
 
@@ -78,8 +84,9 @@ public class SheepMovementController : MonoBehaviour
     private int _runAnimSpeedParam;
 
     // Estado interno
-    private Vector2 _moveInput;       // Input 2D
-    private bool _wantsSprint;     // Sprint pulsado
+    private Vector2 _moveInput = Vector2.zero;
+    private bool _wantsSprint = false;
+
     private float _energy;          // Energía actual
     private Vector3 _inputDirWorld;    // Dirección en mundo
 
@@ -88,6 +95,7 @@ public class SheepMovementController : MonoBehaviour
 
     // Umbral estático
     private static readonly float _inputThreshold = 0.001f;
+
 
 
     private void Awake()
@@ -112,19 +120,58 @@ public class SheepMovementController : MonoBehaviour
 
     private void OnEnable()
     {
+        Debug.Log("Enabling input handlers");
+        _movementAction.action.performed += OnMovePerformed;
+        _movementAction.action.canceled += OnMoveCanceled;
         _movementAction.action.Enable();
+
+        _sprintAction.action.performed += OnSprintPerformed;
+        _sprintAction.action.canceled += OnSprintCanceled;
         _sprintAction.action.Enable();
     }
 
+
     private void OnDisable()
     {
+        Debug.Log("Disabling input handlers");
+        _movementAction.action.performed -= OnMovePerformed;
+        _movementAction.action.canceled -= OnMoveCanceled;
         _movementAction.action.Disable();
+
+        _sprintAction.action.performed -= OnSprintPerformed;
+        _sprintAction.action.canceled -= OnSprintCanceled;
         _sprintAction.action.Disable();
+    }
+
+
+
+    // ---- Callbacks de InputSystem ----
+
+    private void OnMovePerformed(InputAction.CallbackContext ctx)
+    {
+        Debug.Log($"OnMovePerformed: {ctx.ReadValue<Vector2>()}");
+        _moveInput = ctx.ReadValue<Vector2>();
+    }
+    private void OnMoveCanceled(InputAction.CallbackContext ctx)
+    {
+        Debug.Log("OnMoveCanceled");
+        _moveInput = Vector2.zero;
+    }
+    private void OnSprintPerformed(InputAction.CallbackContext ctx)
+    {
+        Debug.Log("OnSprintPerformed");
+        _wantsSprint = true;
+    }
+    private void OnSprintCanceled(InputAction.CallbackContext ctx)
+    {
+        Debug.Log("OnSprintCanceled");
+        _wantsSprint = false;
     }
 
     private void Update()
     {
-        ReadInput();
+        CalculateInputDirWorld();
+
         UpdateEnergyAndSprint();
         UpdateAnimator();
         UpdateUI();
@@ -169,6 +216,25 @@ public class SheepMovementController : MonoBehaviour
         }
     }
 
+    private void CalculateInputDirWorld()
+    {
+        // ——————— Igual que tenías en ReadInput() ———————
+        Vector3 camF = Camera.main.transform.forward;
+        camF.y = 0; 
+        camF.Normalize();
+        Vector3 camR = Camera.main.transform.right;
+        camR.y = 0; 
+        camR.Normalize();
+
+        Vector3 raw = camF * _moveInput.y + camR * _moveInput.x;
+        float mag = Mathf.Clamp01(_moveInput.magnitude);
+
+        _inputDirWorld = raw.sqrMagnitude > 0.001f
+            ? raw.normalized * mag
+            : Vector3.zero;
+    }
+
+
 
     #region Metodos de movimiento
 
@@ -204,7 +270,7 @@ public class SheepMovementController : MonoBehaviour
         _rb.AddForce(force, ForceMode.Force);
 
 
-        HandleRotation(moveDir, hitGround ? groundNormal : Vector3.up);
+        HandleRotation(moveDir, hitGround ? groundNormal : Vector3.up, _rotationSpeed);
     }
 
 
@@ -218,13 +284,13 @@ public class SheepMovementController : MonoBehaviour
     /// <summary>
     /// Gira la oveja en movimiento hacia _inputDirWorld, inclinándose según la pendiente.
     /// </summary>
-    private void HandleRotation(Vector3 forwardDir, Vector3 upDir)
+    private void HandleRotation(Vector3 forwardDir, Vector3 upDir, float Rotation)
     {
         Quaternion desired = Quaternion.LookRotation(forwardDir, upDir);
         Quaternion smooth = Quaternion.RotateTowards(
             _rb.rotation,
             desired,
-            _rotationSpeed * Time.fixedDeltaTime
+            Rotation * Time.fixedDeltaTime
         );
         _rb.MoveRotation(smooth);
     }
@@ -247,7 +313,7 @@ public class SheepMovementController : MonoBehaviour
         if (hitGround)
             moveDir = Vector3.ProjectOnPlane(moveDir, groundNormal).normalized;
 
-        HandleRotation(moveDir, hitGround ? groundNormal : Vector3.up);
+        HandleRotation(moveDir, hitGround ? groundNormal : Vector3.up, _rotationSpeedStopped);
 
         //if (angle > 0.01f)
         //{
@@ -437,17 +503,28 @@ public class SheepMovementController : MonoBehaviour
         _maxEnergy = energy;
     }
 
+    public Vector3 GetInputDirection()
+    {
+        Vector3 inputDir = _inputDirWorld.normalized * _drawLength;
+        
+        return transform.position + inputDir;
+    }
+
+    public bool GetInput()
+    {
+        return _inputDirWorld.sqrMagnitude > 0f;
+    }
+
     #endregion
 
     private void OnDrawGizmos()
     {
         Vector3 origin = transform.position;
-        float drawLength = 2f;
 
         // Dirección forward del transform en verde
         Gizmos.color = Color.green;
         Vector3 flatForward = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized;
-        Vector3 forwardDir = flatForward * drawLength;
+        Vector3 forwardDir = flatForward * _drawLength;
 
         Gizmos.DrawLine(origin, origin + forwardDir);
         Gizmos.DrawSphere(origin + forwardDir, 0.05f);
@@ -456,7 +533,7 @@ public class SheepMovementController : MonoBehaviour
         Gizmos.color = Color.red;
         if (_inputDirWorld.sqrMagnitude > 0f)
         {
-            Vector3 inputDir = _inputDirWorld.normalized * drawLength;
+            Vector3 inputDir = _inputDirWorld.normalized * _drawLength;
             Gizmos.DrawLine(origin, origin + inputDir);
             Gizmos.DrawSphere(origin + inputDir, 0.05f);
         }

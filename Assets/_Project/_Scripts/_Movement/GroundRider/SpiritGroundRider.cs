@@ -1,13 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-
-
-public class WillGroundRider : MonoBehaviour
+public class SpiritGroundRider : MonoBehaviour
 {
-
-    private IInputProvider _inputProvider;
-
     private Rigidbody _rb;
 
     [Header("Raycast Setup")]
