@@ -8,7 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(TMP_Dropdown))]
 public class OptionsGameSettings : MonoBehaviour
 {
-    [Tooltip("Dropdown de idiomas en tu Canvas.")]
+    [Tooltip("Dropdown de idiomas en Canvas.")]
     public TMP_Dropdown languageDropdown;
 
     private void Awake()
