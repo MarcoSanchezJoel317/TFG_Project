@@ -179,7 +179,7 @@ public class SheepMovementController : MonoBehaviour, IInputProvider
 
     private void FixedUpdate()
     {
-        print(_rb.linearVelocity.magnitude);
+        //print(_rb.linearVelocity.magnitude);
         // Sin input, nada
         if (_inputDirWorld.sqrMagnitude < 0.001f)
             return;
@@ -206,7 +206,7 @@ public class SheepMovementController : MonoBehaviour, IInputProvider
         }
         else
         {
-            // 2) Si ya íbamos en marcha, rotamos y movemos a la vez
+            
             HandleMovement();
             //if (IsInMoveState())
             //{
@@ -346,20 +346,20 @@ public class SheepMovementController : MonoBehaviour, IInputProvider
     /// 1) Lee el input de movimiento y sprint,
     ///    y calcula la dirección de movimiento en espacio mundo.
     /// </summary>
-    private void ReadInput()
-    {
-        _moveInput = _movementAction.action.ReadValue<Vector2>();
-        _wantsSprint = _sprintAction.action.IsPressed();
+    //private void ReadInput()
+    //{
+    //    _moveInput = _movementAction.action.ReadValue<Vector2>();
+    //    _wantsSprint = _sprintAction.action.IsPressed();
 
-        Vector3 camF = Camera.main.transform.forward; camF.y = 0; camF.Normalize();
-        Vector3 camR = Camera.main.transform.right; camR.y = 0; camR.Normalize();
-        Vector3 raw = camF * _moveInput.y + camR * _moveInput.x;
+    //    Vector3 camF = Camera.main.transform.forward; camF.y = 0; camF.Normalize();
+    //    Vector3 camR = Camera.main.transform.right; camR.y = 0; camR.Normalize();
+    //    Vector3 raw = camF * _moveInput.y + camR * _moveInput.x;
 
-        float mag = Mathf.Clamp01(_moveInput.magnitude);
-        _inputDirWorld = raw.sqrMagnitude > 0.001f
-            ? raw.normalized * mag
-            : Vector3.zero;
-    }
+    //    float mag = Mathf.Clamp01(_moveInput.magnitude);
+    //    _inputDirWorld = raw.sqrMagnitude > 0.001f
+    //        ? raw.normalized * mag
+    //        : Vector3.zero;
+    //}
 
     #endregion
 
