@@ -8,55 +8,61 @@ using UnityEngine;
 [RequireComponent(typeof(TMP_Dropdown))]
 public class OptionsGameSettings : MonoBehaviour
 {
-    [Tooltip("Dropdown de idiomas en Canvas.")]
-    public TMP_Dropdown languageDropdown;
+    [Header("UI Elements")]
+    [Tooltip("Dropdown que muestra los idiomas disponibles.")]
+    [SerializeField] private TMP_Dropdown languageDropdown;
 
     private void Awake()
     {
-        // Inicializamos el dropdown tan pronto como se active este GameObject
-        SetupLanguageDropdown();
+        if (languageDropdown == null)
+        {
+            Debug.LogError("[OptionsGameSettings] Falta asignar languageDropdown.");
+            enabled = false;
+        }
     }
 
     private void OnEnable()
     {
-        // Nos aseguramos de refrescar en caso de reactivar el objeto
         SetupLanguageDropdown();
     }
 
-    /// <summary>
-    /// Rellena y configura el dropdown con los idiomas disponibles.
-    /// </summary>
-    private void SetupLanguageDropdown()
+    private void OnDisable()
     {
-        // 1. Limpiamos opciones previas
-        languageDropdown.options.Clear();
-
-        // 2. Añadimos cada idioma usando AvailableLanguages
-        //    AvailableLanguages es IReadOnlyList<LanguageData>
-        foreach (var langData in LanguageManager.Instance.AvailableLanguages)
-        {
-            languageDropdown.options.Add(
-                new TMP_Dropdown.OptionData(langData.displayName)
-            );
-        }
-
-        // 3. Seleccionamos el índice guardado
-        int current = LanguageManager.Instance.GetCurrentLanguageIndex();
-        languageDropdown.value = current;
-        languageDropdown.RefreshShownValue();
-
-        // 4. Nos suscribimos a cambios para actualizar el idioma
         languageDropdown.onValueChanged.RemoveAllListeners();
-        languageDropdown.onValueChanged.AddListener(idx =>
-            LanguageManager.Instance.SetLanguage(idx)
-        );
     }
 
     /// <summary>
-    /// Método de ejemplo para abrir una URL externa.
+    /// Rellena el dropdown con los idiomas de LanguageManager
+    /// y suscribe el evento para cambiar de idioma.
     /// </summary>
-    public void EnlaceTemporal()
+    private void SetupLanguageDropdown()
+    {
+        var manager = LanguageManager.Instance;
+        languageDropdown.ClearOptions();
+
+        // Añade cada idioma por su displayName
+        var options = manager.AvailableLanguages
+                             .Select(ld => ld.displayName)
+                             .ToList();
+        languageDropdown.AddOptions(options);
+
+        // Ajusta el índice guardado
+        languageDropdown.value = manager.GetCurrentLanguageIndex();
+        languageDropdown.RefreshShownValue();
+
+        // Cambia el idioma al seleccionar una opción
+        languageDropdown.onValueChanged.AddListener(idx =>
+        {
+            manager.SetLanguage(idx);
+        });
+    }
+
+    /// <summary>
+    /// Ejemplo de método que abre una URL externa.
+    /// </summary>
+    public void OpenExternalLink()
     {
         Application.OpenURL("https://albaro.dev/");
     }
 }
+

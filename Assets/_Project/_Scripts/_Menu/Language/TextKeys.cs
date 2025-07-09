@@ -1,6 +1,11 @@
 using TMPro;
 using UnityEngine;
 
+
+/// <summary>
+/// Claves usadas para obtener los textos traducidos desde LanguageManager.
+/// </summary>
+/// 
 public enum TextKey
 {
     //Global Menu
@@ -21,7 +26,7 @@ public enum TextKey
     PS_DESKTOP,
 
 
-    // Secci�n OPCIONES
+    // OPTIONS SECTION
     OP_SOUND,
     OP_GRAPHICS,
     OP_GAME,
@@ -30,21 +35,20 @@ public enum TextKey
 
     //SOUND SECTION
 
-
     OP_SOUND_MASTER,
     OP_SOUND_MUSIC,
     OP_SOUND_EFFECTS,
-    
 
 
-    //Graphic section
+
+    //GRAPHICS SECTION
 
     OP_GRAPHICS_DEV,
 
-    //Controls section
+    // CONTROLS SECTION
     OP_CONTROLS_DEV,
 
-    //Game section
+    // GAME SECTION
     OP_GAME_LANGUAGE,
     DEVICE,
 }

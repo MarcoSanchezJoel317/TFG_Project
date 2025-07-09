@@ -774,7 +774,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _distanceFromCamera: 10
-  _gamepadSpeed: 5
+  _gamepadSpeed: 35
   _smoothFactor: 0.2
   moveAction: {fileID: -4857005724099044757, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
   clickAction: {fileID: 3821488227079694048, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
