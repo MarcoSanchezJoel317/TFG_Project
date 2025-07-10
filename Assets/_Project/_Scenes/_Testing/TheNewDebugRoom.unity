@@ -1852,6 +1852,13 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 7415432164918866460, guid: b4dacdd497b0dab4e89722bb0f98ab49, type: 3}
+      propertyPath: m_text
+      value: 'v 0.5.0
+
+
+'
+      objectReference: {fileID: 0}
     - target: {fileID: 7703938850184304300, guid: b4dacdd497b0dab4e89722bb0f98ab49, type: 3}
       propertyPath: m_Name
       value: CANVAS
@@ -3377,7 +3384,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &397239040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3551,12 +3558,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69114bc19bcabc2488454dc3ee143da3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  origin: {fileID: 1955530508}
-  target: {fileID: 297786904}
-  maxDistanceFromOrigin: 10
-  minHeightAboveOrigin: 4
-  breathingFrequency: 0.4
-  breathingAmplitude: 0.4
+  _origin: {fileID: 1955530508}
+  _target: {fileID: 297786904}
+  _maxDistanceFromOrigin: 10
+  _minHeightAboveOrigin: 4
+  _breathingFrequency: 0.5
+  _breathingAmplitude: 0.3
+  _will: {fileID: 1326964467}
+  _maxEmission: 6
 --- !u!23 &420580775
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3565,7 +3574,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 420580772}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -3580,7 +3589,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2c4f7eb3a76457c4b9c4f102b19e27ad, type: 2}
+  - {fileID: 2100000, guid: 077992592ecd70c44abda59ff6ea6284, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3619,7 +3628,7 @@ Transform:
   m_GameObject: {fileID: 420580772}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 111.085, y: 1.400495, z: -38.2}
+  m_LocalPosition: {x: 121.055, y: 1.400495, z: -116.3}
   m_LocalScale: {x: 0.37, y: 0.37, z: 0.37}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -4274,7 +4283,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4367084170784211619, guid: 172dd409f81ce6743bed6654f7aa3e19, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 108.83
+      value: 118.8
       objectReference: {fileID: 0}
     - target: {fileID: 4367084170784211619, guid: 172dd409f81ce6743bed6654f7aa3e19, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4282,7 +4291,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4367084170784211619, guid: 172dd409f81ce6743bed6654f7aa3e19, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -43.5
+      value: -121.6
       objectReference: {fileID: 0}
     - target: {fileID: 4367084170784211619, guid: 172dd409f81ce6743bed6654f7aa3e19, type: 3}
       propertyPath: m_LocalRotation.w
@@ -11022,7 +11031,7 @@ Transform:
   m_GameObject: {fileID: 1326964461}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 108.554, y: 1.400495, z: -38.2}
+  m_LocalPosition: {x: 118.524, y: 1.400495, z: -116.3}
   m_LocalScale: {x: 0.37, y: 0.37, z: 0.37}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -11045,10 +11054,10 @@ MonoBehaviour:
   _rayMask:
     serializedVersion: 2
     m_Bits: 256
-  _isGroundThreshold: 0.6
-  _baseRideHeight: 2
-  _rideSpringStrenght: 300
-  _rideSpringDamper: 15
+  _groundThreshold: 0.6
+  _baseHeight: 2.5
+  _springStrength: 300
+  _springDamper: 15
   _breathingAmplitude: 0.4
   _breathingFrequency: 2
 --- !u!96 &1326964469
@@ -11319,7 +11328,7 @@ Transform:
   m_GameObject: {fileID: 1443593676}
   serializedVersion: 2
   m_LocalRotation: {x: 0.13096498, y: 0.0074190665, z: -0.0009801072, w: 0.99135876}
-  m_LocalPosition: {x: 108.83, y: 5.0521784, z: -53.27618}
+  m_LocalPosition: {x: 118.8, y: 5.0521784, z: -131.37617}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15559,12 +15568,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69114bc19bcabc2488454dc3ee143da3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  origin: {fileID: 1440003627}
-  target: {fileID: 297786904}
-  maxDistanceFromOrigin: 10
-  minHeightAboveOrigin: 4
-  breathingFrequency: 0.5
-  breathingAmplitude: 0.3
+  _origin: {fileID: 0}
+  _target: {fileID: 0}
+  _maxDistanceFromOrigin: 10
+  _minHeightAboveOrigin: 4
+  _breathingFrequency: 0.5
+  _breathingAmplitude: 0.3
+  _will: {fileID: 0}
+  _maxEmission: 5
 --- !u!114 &1688425644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16005,7 +16016,7 @@ Transform:
   m_GameObject: {fileID: 1717120549}
   serializedVersion: 2
   m_LocalRotation: {x: 0.13096498, y: 0.0074190986, z: -0.0009801115, w: 0.99135876}
-  m_LocalPosition: {x: 108.83, y: 5.0521784, z: -53.27618}
+  m_LocalPosition: {x: 118.8, y: 5.0521784, z: -131.37617}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

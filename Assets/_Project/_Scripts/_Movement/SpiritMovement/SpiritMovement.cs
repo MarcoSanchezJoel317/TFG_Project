@@ -1,77 +1,138 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// Controla la posición y el pulso vertical del Espíritu Santo,
+/// usando navegación sobre NavMesh y un suave efecto de “respiración”.
+/// Además ajusta la emisión del material según su alineación con la Voluntad en el plano XZ.
+/// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 public class SpiritMovement : MonoBehaviour
 {
-    [Header("References")]
-    public Transform origin;
-    public Transform target;
+    [Header("Referencias")]
+    [Tooltip("Transform de la oveja, punto de origen de la guía.")]
+    [SerializeField] private Transform _origin;
+    [Tooltip("Transform del punto objetivo hacia el que guiar al jugador.")]
+    [SerializeField] private Transform _target;
 
-    [Header("Navigation Settings")]
-    public float maxDistanceFromOrigin = 10f;
-    public float minHeightAboveOrigin = 4f;
+    [Header("Ajustes de Navegación")]
+    [Tooltip("Distancia máxima en el plano XZ desde el origen.")]
+    [SerializeField] private float _maxDistanceFromOrigin = 10f;
+    [Tooltip("Altura mínima sobre el origen.")]
+    [SerializeField] private float _minHeightAboveOrigin = 4f;
 
-    [Header("Breathing Settings")]
-    [Tooltip("Frecuencia de respiración (ciclos por segundo)")]
-    public float breathingFrequency = 0.5f;
-    [Tooltip("Amplitud del pulso de respiración (unidades Y)")]
-    public float breathingAmplitude = 0.3f;
+    [Header("Pulso Vertical (Respiración)")]
+    [Tooltip("Ciclos por segundo del pulso senoidal.")]
+    [SerializeField] private float _breathingFrequency = 0.5f;
+    [Tooltip("Amplitud en unidades Y del pulso de respiración.")]
+    [SerializeField] private float _breathingAmplitude = 0.3f;
 
-    NavMeshAgent agent;
-    float breathingOffset;
+    [Header("Emisión por Alineación")]
+    [Tooltip("Transform de la Voluntad para medir alineación.")]
+    [SerializeField] private Transform _will;
+    [Tooltip("Intensidad máxima de emisión cuando estén alineados.")]
+    [SerializeField] private float _maxEmission = 5f;
 
-    void Awake()
+    private NavMeshAgent _agent;
+    private Material    _material;
+    private Color       _baseEmission;
+
+    /// <summary>
+    /// Inicializa el agente de navegación y material para emisión.
+    /// </summary>
+    private void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
-        agent.updateRotation = true;
-        agent.updateUpAxis = true;
+        _agent = GetComponent<NavMeshAgent>();
+        _agent.updateRotation = true;
+        _agent.updateUpAxis   = true;
+
+        // Instanciar el material para modificar su emisión
+        var renderer = GetComponent<MeshRenderer>();
+        if (renderer != null)
+        {
+            _material = renderer.material;
+            _baseEmission = _material.GetColor("_EmissionColor");
+            _material.EnableKeyword("_EMISSION");
+        }
     }
 
-    void Update()
+    /// <summary>
+    /// Cada frame ajusta destino en XZ recortado al radio máximo.
+    /// </summary>
+    private void Update()
     {
-        if (origin == null || target == null) return;
+        if (_origin == null || _target == null) return;
 
-        // --- Misma lógica de clamp en XZ ---
-        Vector3 originXZ = new Vector3(origin.position.x, 0, origin.position.z);
-        Vector3 targetXZ = new Vector3(target.position.x, 0, target.position.z);
+        // Proyección al plano XZ
+        Vector3 originXZ = new Vector3(_origin.position.x, 0f, _origin.position.z);
+        Vector3 targetXZ = new Vector3(_target.position.x, 0f, _target.position.z);
+
+        // Cálculo de offset y recorte
         Vector3 offset = targetXZ - originXZ;
-        if (offset.magnitude > maxDistanceFromOrigin)
-            offset = offset.normalized * maxDistanceFromOrigin;
-        Vector3 clampedTarget = originXZ + offset;
-        clampedTarget.y = origin.position.y;
-        agent.SetDestination(clampedTarget);
+        if (offset.magnitude > _maxDistanceFromOrigin)
+            offset = offset.normalized * _maxDistanceFromOrigin;
+
+        // Destino dentro del radio permitido
+        Vector3 dest = originXZ + offset;
+        dest.y = _origin.position.y;
+
+        _agent.SetDestination(dest);
     }
 
-    void LateUpdate()
+    /// <summary>
+    /// Ajusta altura con pulso senoidal y modula emisión según alineación en XZ.
+    /// </summary>
+    private void LateUpdate()
     {
-        // 1) Calcula offset de respiración
-        breathingOffset = Mathf.Sin(Time.time * Mathf.PI * 2f * breathingFrequency)
-                          * breathingAmplitude;
+        if (_origin == null) return;
 
-        // 2) Aplica altura mínima + respiración
+        // Pulso vertical
+        float pulse = Mathf.Sin(Time.time * Mathf.PI * 2f * _breathingFrequency)
+                    * _breathingAmplitude;
+        float baseY = _origin.position.y + _minHeightAboveOrigin;
         Vector3 pos = transform.position;
-        float baseMinY = origin.position.y + minHeightAboveOrigin;
-        float targetY = baseMinY + breathingOffset;
-        if (pos.y < targetY)
-            pos.y = targetY;
-        else
-            pos.y = targetY;  // si quieres que siempre oscile arriba y abajo, quita el if
+        pos.y = baseY + pulse;
         transform.position = pos;
+
+        // Emisión según alineación en el plano horizontal (XZ)
+        if (_material != null && _will != null)
+        {
+            // Vectores desde el origen proyectados en XZ
+            Vector3 toWill   = _will.position - _origin.position;
+            Vector3 toSpirit = transform.position - _origin.position;
+            toWill.y = 0f;
+            toSpirit.y = 0f;
+
+            float angle = Vector3.Angle(toWill, toSpirit);
+            float threshold = 15f; // grados máximos para considerar “alineado”
+            float t = (angle <= threshold)
+                 ? 1f - (angle / threshold)  // De 1 (0°) a 0 (15°)
+                 : 0f;                       // Fuera del umbral, emisión base
+
+
+            Color emission = _baseEmission + Color.white * (t * _maxEmission);
+            _material.SetColor("_EmissionColor", emission);
+        }
     }
 
-    void OnDrawGizmosSelected()
+    /// <summary>
+    /// Dibuja en editor el radio máximo y la altura mínima.
+    /// </summary>
+    private void OnDrawGizmosSelected()
     {
-        if (origin == null) return;
+        if (_origin == null) return;
+
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(origin.position, maxDistanceFromOrigin);
-        // Altura mínima
+        Gizmos.DrawWireSphere(_origin.position, _maxDistanceFromOrigin);
+
         Gizmos.color = Color.yellow;
-        Vector3 floor = origin.position;
-        Vector3 ceiling = origin.position + Vector3.up * minHeightAboveOrigin;
+        Vector3 floor   = _origin.position;
+        Vector3 ceiling = floor + Vector3.up * _minHeightAboveOrigin;
         Gizmos.DrawLine(floor, ceiling);
     }
 }
+
+
 
 
 
