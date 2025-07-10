@@ -4354,6 +4354,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5685398707038595060, guid: 172dd409f81ce6743bed6654f7aa3e19, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1955530509}
+    - targetCorrespondingSourceObject: {fileID: 5685398707038595060, guid: 172dd409f81ce6743bed6654f7aa3e19, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1955530510}
     - targetCorrespondingSourceObject: {fileID: 693550272061398878, guid: 172dd409f81ce6743bed6654f7aa3e19, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1248488792}
@@ -4721,7 +4724,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 539952389}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 7e5453d78e45ecf4da3fa60b161c36cc, type: 2}
   m_audioClip: {fileID: 8300000, guid: 759a767cf720f60468fcd24ee10efae4, type: 3}
@@ -11212,6 +11215,9 @@ MonoBehaviour:
   _groundMask:
     serializedVersion: 2
     m_Bits: 256
+  audioSource: {fileID: 0}
+  walk: {fileID: 0}
+  run: {fileID: 0}
 --- !u!4 &1440003627 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4617344895555032787, guid: 444c44d5730f92a4b9cd2f9cf2d23f32, type: 3}
@@ -17176,6 +17182,9 @@ MonoBehaviour:
   _groundMask:
     serializedVersion: 2
     m_Bits: 256
+  audioSource: {fileID: 1955530510}
+  walk: {fileID: 8300000, guid: d1450db5514262f468bc65c318a30e26, type: 3}
+  run: {fileID: 8300000, guid: 541cb73757b4d55468f02328ac9dc395, type: 3}
 --- !u!4 &1955530508 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4367084170784211619, guid: 172dd409f81ce6743bed6654f7aa3e19, type: 3}
@@ -17204,6 +17213,103 @@ MonoBehaviour:
   _rideSpringDamper: 15
   _breathingAmplitude: 0.02
   _breathingFrequency: 5
+--- !u!82 &1955530510
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36204642}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 3693866561324448083, guid: 7e5453d78e45ecf4da3fa60b161c36cc, type: 2}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!43 &2000002737
 Mesh:
   m_ObjectHideFlags: 0

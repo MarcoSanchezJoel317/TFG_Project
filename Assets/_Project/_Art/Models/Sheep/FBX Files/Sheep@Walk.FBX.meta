@@ -263,7 +263,7 @@ ModelImporter:
       - time: 0
         functionName: PlayWalk
         data: 
-        objectReferenceParameter: {fileID: 6291135909804927252, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
+        objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
