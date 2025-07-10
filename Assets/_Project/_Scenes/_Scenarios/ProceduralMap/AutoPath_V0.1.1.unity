@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: e523c896238589445ae28370258d26c6, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -1061,8 +1061,8 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
+  m_Color: {r: 0, g: 0.54838705, b: 1, a: 1}
+  m_Intensity: 0.25
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -3952,7 +3952,7 @@ MonoBehaviour:
   - {fileID: 2504174453395755284, guid: dfc8b750d1aab154cb72cf1b10e94f29, type: 3}
   - {fileID: 2504174453395755284, guid: e61e353e453541a4bbf3e403df17dba3, type: 3}
   - {fileID: 2504174453395755284, guid: d5ca28c488b94c14ca549fced5d3de38, type: 3}
-  enemy: {fileID: 1430296292382172304, guid: a4268d21ccff3ca4eb1942acadd70ffe, type: 3}
+  sheep: {fileID: 1430296292382172304, guid: a4268d21ccff3ca4eb1942acadd70ffe, type: 3}
 --- !u!1001 &1256149927
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7607,6 +7607,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1783193706}
+  - {fileID: 196302361}
   - {fileID: 471716007}
   - {fileID: 1246768292}
   - {fileID: 1992238376}
@@ -7616,7 +7617,6 @@ SceneRoots:
   - {fileID: 1017637577}
   - {fileID: 362404546}
   - {fileID: 8195002349557324770}
-  - {fileID: 196302361}
   - {fileID: 1004069991}
   - {fileID: 253136384}
   - {fileID: 1829378838}

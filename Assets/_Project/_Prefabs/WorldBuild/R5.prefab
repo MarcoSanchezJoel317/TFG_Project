@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6628848902961869333}
   - component: {fileID: 168904000008573089}
   - component: {fileID: 2433736721577150352}
+  - component: {fileID: 8956135114879390456}
   m_Layer: 0
   m_Name: R5
   m_TagString: Untagged
@@ -64,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4874126678125670354, guid: 414eec51f6cb2c3498d3580db7329acc, type: 3}
+  - {fileID: 2100000, guid: a95d2cfec1daeda4fae4644a3ac65f58, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -86,3 +87,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8956135114879390456
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2557046653959275908}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.6616496, y: 1.1408559, z: 2.9919314}
+  m_Center: {x: -0.03122067, y: 0.46526834, z: 0.20794758}

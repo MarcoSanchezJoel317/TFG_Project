@@ -33,7 +33,7 @@ public class MapCreator : MonoBehaviour
     public GameObject[] forests;
     public GameObject[] farForests;
     public GameObject[] floors;
-    public GameObject enemy;
+    public GameObject sheep;
 
     int xSize, ySize, zSize;
     int[][][] map;
@@ -42,7 +42,7 @@ public class MapCreator : MonoBehaviour
     List<Room> rooms =  new List<Room>();
 
     GameObject mazeParent;
-    GameObject enemysParent;
+    GameObject SheepsParent;
 
     void Start()
     {
@@ -61,7 +61,7 @@ public class MapCreator : MonoBehaviour
     {
         rooms.Clear();
         DestroyAllChildren(mazeParent.transform);
-        DestroyAllChildren(enemysParent.transform);
+        DestroyAllChildren(SheepsParent.transform);
 
         StartGame();
     }
@@ -254,9 +254,9 @@ public class MapCreator : MonoBehaviour
 
                     if (distance <= radius)  // Solo limpia dentro del radio
                     {
-                        int enemyPercent = UnityEngine.Random.Range(0, oneBetween);
+                        int sheepPercent = UnityEngine.Random.Range(0, oneBetween);
 
-                        if (enemyPercent < 1)
+                        if (sheepPercent < 1)
                             map[y][x][0] = 2;
 
                         else
@@ -316,7 +316,7 @@ public class MapCreator : MonoBehaviour
         if (mazeParent == null)
         {
             mazeParent = new GameObject("Maze"); // GameObject contenedor
-            enemysParent = new GameObject("Enemys"); // GameObject contenedor
+            SheepsParent = new GameObject("Sheeps"); // GameObject contenedor
         }
         
 
@@ -349,10 +349,10 @@ public class MapCreator : MonoBehaviour
 
                     if (map[y][x][0] == 2)
                     {
-                        ene = Instantiate(enemy, position + new Vector3(0, -0.3f, 0), Quaternion.identity);
+                        ene = Instantiate(sheep, position + new Vector3(0, -0.3f, 0), Quaternion.identity);
 
                         ene.transform.LookAt(new Vector3(51.5f, 0, 25));
-                        ene.transform.parent = enemysParent.transform; // Asignar el padre
+                        ene.transform.parent = SheepsParent.transform; // Asignar el padre
                     }
                 }
 

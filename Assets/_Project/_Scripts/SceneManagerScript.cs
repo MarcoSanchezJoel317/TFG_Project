@@ -11,9 +11,13 @@ public class SceneManagerScript : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            LoadSceneIfNotLoaded("_Project/_Scenes/_Scenarios/ProceduralMap/AutoPath_V0.1.1");
+            LoadSceneIfNotLoaded("_Project/_Scenes/_Scenarios/Meadow/NightMeadow_V0.0.0");
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            LoadSceneIfNotLoaded("_Project/_Scenes/_Scenarios/ProceduralMap/AutoPath_V0.1.1");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             LoadSceneIfNotLoaded("_Project/_Scenes/_Scenarios/Forest/Forest_V0.0.0");
         }

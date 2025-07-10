@@ -16,8 +16,8 @@ TagManager:
   - Terrain
   - Water
   - UI
-  - Invisible Terrain
   - PaintParticles
+  - Invisible Terrain
   - Walkable
   - NoWalkable
   - 
