@@ -1,120 +1,77 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem;
+
+/// <summary>
+/// Usa fuerzas físicas para posicionar un objeto a un radio fijo alrededor del centro de un receptor,
+/// moviéndose hacia la dirección de input 2D que el receptor provee (plano XZ).
+/// </summary>
+/// 
+/// <summary>
+/// Interfaz para que el receptor exponga su input 2D en XZ.
+/// </summary>
+public interface IInputProvider
+{
+    Vector3 GetInputDirection();
+    bool GetInput();
+}
+
 
 [RequireComponent(typeof(Rigidbody))]
 public class WillMovement : MonoBehaviour
 {
-    [Header("Input Actions")]
-    [SerializeField] private InputActionReference _movementInputAction;
-    [SerializeField] private InputActionReference _sprintInputAction;
+    [Header("Receptor e Input")]
+    [SerializeField, Tooltip("Transform del receptor alrededor del cual posicionarse.")]
+    private Transform receptor;
 
-    [Header("Movement Settings")]
-    [SerializeField] private float _moveSpeed = 6f;
-    [SerializeField] private float _sprintSpeedMultiplier = 1.5f;
-    [SerializeField] private float _minRadius = 2f;
-    [SerializeField] private float _maxRadius = 6f;
-    [SerializeField] private float _sprintRadiusBonus = 1f;
+    [SerializeField, Tooltip("Componente del receptor que implementa IInputProvider.")]
+    private MonoBehaviour inputProviderComponent;
 
+    [Header("Configuración de Órbita")]
+    [SerializeField, Tooltip("Radio deseado en metros desde el centro del receptor.")]
+    private float radius = 3f;
+
+    [SerializeField, Tooltip("Fuerza de spring para corregir la posición radial (solo eje XZ).")]
+    private float followStrength = 50f;
+
+    private IInputProvider _inputProvider;
     private Rigidbody _rb;
-    private Transform _sheepTransform;
-    private Transform _cameraTransform;
-    private Vector2 _input;
-    private bool _isSprinting;
-
-    public bool IsSprinting => _isSprinting;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
-        var sheepGo = GameObject.FindGameObjectWithTag("Player");
-        if (sheepGo != null)
-            _sheepTransform = sheepGo.transform;
-        else
-            Debug.LogError("WillMovement: Sheep (tag 'Player') not found.", this);
 
-        if (Camera.main != null)
-            _cameraTransform = Camera.main.transform;
-        else
-            Debug.LogWarning("WillMovement: MainCamera not found in scene.", this);
-    }
+        if (receptor == null)
+        {
+            //Debug.LogError("OrbitalFollower: receptor no asignado.");
+            enabled = false;
+            return;
+        }
 
-    private void OnEnable()
-    {
-        _movementInputAction.action.Enable();
-        _movementInputAction.action.performed += OnMovePerformed;
-        _movementInputAction.action.canceled += OnMoveCanceled;
-
-        _sprintInputAction.action.Enable();
-        _sprintInputAction.action.performed += OnSprintPerformed;
-        _sprintInputAction.action.canceled += OnSprintCanceled;
-    }
-
-    private void OnDisable()
-    {
-        _movementInputAction.action.performed -= OnMovePerformed;
-        _movementInputAction.action.canceled -= OnMoveCanceled;
-        _movementInputAction.action.Disable();
-
-        _sprintInputAction.action.performed -= OnSprintPerformed;
-        _sprintInputAction.action.canceled -= OnSprintCanceled;
-        _sprintInputAction.action.Disable();
+        _inputProvider = inputProviderComponent as IInputProvider;
+        if (_inputProvider == null)
+        {
+            //Debug.LogError("OrbitalFollower: El componente no implementa IInputProvider.");
+            enabled = false;
+            return;
+        }
     }
 
     private void FixedUpdate()
     {
-        if (_sheepTransform == null) return;
-
-        // Build camera-relative move direction in XZ plane
-        Vector3 forward = (_cameraTransform ? _cameraTransform.forward : Vector3.forward);
-        Vector3 right = (_cameraTransform ? _cameraTransform.right : Vector3.right);
-        forward.y = 0; right.y = 0;
-        forward.Normalize(); right.Normalize();
-
-        Vector3 moveDir = forward * _input.y + right * _input.x;
-        if (moveDir.sqrMagnitude > 1f) moveDir.Normalize();
-
-        // Adjust speed for sprint
-        float speed = _moveSpeed * (_isSprinting ? _sprintSpeedMultiplier : 1f);
-        Vector3 desiredPos = transform.position + moveDir * speed * Time.fixedDeltaTime;
-
-        // Clamp to radial limits around the sheep
-        float maxRadius = _maxRadius + (_isSprinting ? _sprintRadiusBonus : 0f);
-        float distToSheep = Vector3.Distance(desiredPos, _sheepTransform.position);
-
-        if (distToSheep > maxRadius)
+        if (_inputProvider.GetInput())
         {
-            Vector3 dir = (desiredPos - _sheepTransform.position).normalized;
-            desiredPos = _sheepTransform.position + dir * maxRadius;
+            Vector3 move = new Vector3(_inputProvider.GetInputDirection().x, this.transform.position.y, _inputProvider.GetInputDirection().z);
+            _rb.MovePosition(move);
         }
-        else if (distToSheep < _minRadius)
-        {
-            Vector3 dir = (desiredPos - _sheepTransform.position).normalized;
-            desiredPos = _sheepTransform.position + dir * _minRadius;
-        }
-
-        _rb.MovePosition(desiredPos);
-    }
-
-    private void OnMovePerformed(InputAction.CallbackContext ctx)
-    {
-        _input = ctx.ReadValue<Vector2>();
-    }
-
-    private void OnMoveCanceled(InputAction.CallbackContext ctx)
-    {
-        _input = Vector2.zero;
-    }
-
-    private void OnSprintPerformed(InputAction.CallbackContext ctx)
-    {
-        _isSprinting = true;
-    }
-
-    private void OnSprintCanceled(InputAction.CallbackContext ctx)
-    {
-        _isSprinting = false;
+        
     }
 }
+
+
+
+
+
+
+
 
 
 

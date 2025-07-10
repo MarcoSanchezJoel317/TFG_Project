@@ -1,132 +1,164 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
+/// <summary>
+/// Mantiene a la oveja flotando a una altura constante sobre el terreno,
+/// aplicando un comportamiento de muelle amortiguado y un suave efecto de respiración.
+/// </summary>
+[RequireComponent(typeof(Rigidbody))]
 public class SheepGroundRider : MonoBehaviour
 {
-    private Rigidbody _rb;
+    #region Inspector Settings
 
-    [Header("Raycast Setup")]
-    [SerializeField]
-    private Vector3 _downDir = new Vector3(0f, -1f, 0f);
-    [SerializeField]
-    private float _maxRayDist = 100f;
-    [SerializeField]
-    private LayerMask _rayMask;
-    [SerializeField]
-    private float _isGroundThreshold = 0.6f; // Usaremos esto para el IsGrounded()
+    [Header("Raycast Configuración")]
+    [Tooltip("Dirección del raycast hacia abajo (en espacio local).")]
+    [SerializeField] private Vector3 _downDir = Vector3.down;
+    [Tooltip("Distancia máxima para detectar el suelo.")]
+    [SerializeField] private float _maxRayDist = 100f;
+    [Tooltip("Capas consideradas como suelo.")]
+    [SerializeField] private LayerMask _rayMask;
+    [Tooltip("Margen extra para determinar si está en el suelo.")]
+    [SerializeField] private float _isGroundThreshold = 0.6f;
+
+    [Header("Parámetros del Resorte")]
+    [Tooltip("Altura objetivo base respecto al suelo.")]
+    [SerializeField] private float _baseRideHeight = 2.5f;
+    [Tooltip("Constante de fuerza del resorte.")]
+    [SerializeField] private float _rideSpringStrength = 300f;
+    [Tooltip("Constante de amortiguación del resorte.")]
+    [SerializeField] private float _rideSpringDamper = 15f;
+
+    [Header("Efecto Respiración")]
+    [Tooltip("Amplitud del movimiento senoidal.")]
+    [SerializeField] private float _breathingAmplitude = 0.4f;
+    [Tooltip("Frecuencia del movimiento senoidal (ciclos por segundo).")]
+    [SerializeField] private float _breathingFrequency = 1f;
+
+    #endregion
+
+    private Rigidbody _rb;
+    private Transform _cachedTransform;
 
     private bool _rayDidHit;
     private RaycastHit _rayHit;
+    private float _currentBreathingOffset;
 
-    [Header("Ride Setup")]
-    [SerializeField]
-    private float _baseRideHeight = 2.5f; // Altura base deseada (tu 2.5)
-    [SerializeField]
-    private float _rideSpringStrenght = 300f;
-    [SerializeField]
-    private float _rideSpringDamper = 15f;
-
-    [Header("Breathing/Floating Effect")]
-    [SerializeField]
-    private float _breathingAmplitude = 0.4f; // Magnitud de la oscilación (ej. 0.2 unidades hacia arriba/abajo)
-    [SerializeField]
-    private float _breathingFrequency = 1f; // Velocidad de la oscilación (ej. 1 ciclo por segundo)
-    private float _currentBreathingOffset; // Offset calculado por la función sin
-
-    Gamepad pad;
+    // Constantes para gizmos
+    private const float GizmoBaseRadius = 0.1f;
+    private const float GizmoBreathRadius = 0.15f;
+    private const float GizmoThresholdRad = 0.05f;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        _cachedTransform = transform;
     }
-
 
     private void FixedUpdate()
     {
-        CalculateBreathingOffset(); // Calcula el offset de la "respiración"
-        Vector3 rayDir = transform.TransformDirection(_downDir);
-
-        _rayDidHit = Physics.Raycast(transform.position, rayDir, out _rayHit, _maxRayDist, _rayMask);
-
-        Balance();
+        PerformRaycast();
+        CalculateBreathingOffset();
+        ApplySpringBalance();
     }
 
+    /// <summary>
+    /// Lanza un raycast desde la posición de la oveja hacia abajo
+    /// para detectar la altura del suelo.
+    /// </summary>
+    private void PerformRaycast()
+    {
+        Vector3 worldDown = _cachedTransform.TransformDirection(_downDir);
+        _rayDidHit = Physics.Raycast(
+            _cachedTransform.position,
+            worldDown,
+            out _rayHit,
+            _maxRayDist,
+            _rayMask
+        );
+    }
+
+    /// <summary>
+    /// Calcula el desplazamiento vertical de “respiración” usando una función seno.
+    /// </summary>
     private void CalculateBreathingOffset()
     {
-        // Usa Time.time para un movimiento continuo y suave
-        // Mathf.Sin oscila entre -1 y 1
-        _currentBreathingOffset = Mathf.Sin(Time.time * _breathingFrequency) * _breathingAmplitude;
+        _currentBreathingOffset = Mathf.Sin(
+            Time.time * _breathingFrequency
+        ) * _breathingAmplitude;
     }
 
-    private void Balance()
+    /// <summary>
+    /// Aplica la fuerza de resorte amortiguado para mantener la altura deseada.
+    /// </summary>
+    private void ApplySpringBalance()
     {
-        if (_rayDidHit)
-        {
-            Vector3 vel = _rb.linearVelocity;
-            Vector3 rayDir = transform.TransformDirection(_downDir);
+        if (!_rayDidHit) return;
 
-            Vector3 otherVel = Vector3.zero;
-            Rigidbody hitBody = _rayHit.rigidbody;
+        Vector3 worldDown = _cachedTransform.TransformDirection(_downDir);
 
-            if (hitBody != null)
-            {
-                otherVel = hitBody.linearVelocity;
-            }
+        // Velocidad relativa entre oveja y suelo
+        Vector3 ownVel = _rb.linearVelocity;
+        Vector3 otherVel = _rayHit.rigidbody?.linearVelocity ?? Vector3.zero;
+        float relVel = Vector3.Dot(worldDown, ownVel - otherVel);
 
-            float rayDirVel = Vector3.Dot(rayDir, vel);
-            float otherDirVel = Vector3.Dot(rayDir, otherVel);
+        // Altura objetivo = base + respiración
+        float targetHeight = _baseRideHeight + _currentBreathingOffset;
+        float heightError = _rayHit.distance - targetHeight;
 
-            float relVel = rayDirVel - otherDirVel;
+        // Fuerza del resorte: restauradora y amortiguadora
+        float springForce = (heightError * _rideSpringStrength)
+                          - (relVel * _rideSpringDamper);
 
-            // La altura objetivo ahora es la altura base más el offset de "respiración"
-            float targetRideHeight = _baseRideHeight + _currentBreathingOffset;
-
-            float x = _rayHit.distance - targetRideHeight;
-
-            float springForce = (x * _rideSpringStrenght) - (relVel * _rideSpringDamper);
-
-            _rb.AddForce(rayDir * springForce);
-
-            if (hitBody != null)
-            {
-                hitBody.AddForceAtPosition(rayDir * -springForce, _rayHit.point);
-            }
-        }
+        // Aplicar fuerzas simétricas en oveja y suelo
+        _rb.AddForce(worldDown * springForce);
+        if (_rayHit.rigidbody != null)
+            _rayHit.rigidbody.AddForceAtPosition(
+                -worldDown * springForce,
+                _rayHit.point
+            );
     }
 
-    // Método público para que el movimiento pueda comprobar si se está en el suelo
+    /// <summary>
+    /// Indica si la oveja está lo suficientemente cerca del suelo.
+    /// </summary>
     public bool IsGrounded()
     {
-        // Esta en el suelo si ha dado con el rayo 
-        return _rayDidHit && _rayHit.distance <= _baseRideHeight + _isGroundThreshold;
+        return _rayDidHit &&
+               _rayHit.distance <= (_baseRideHeight + _isGroundThreshold);
     }
 
-
-
-    // Dibuja los Gizmos en el Editor y en Play Mode (cuando el GameObject está seleccionado)
     private void OnDrawGizmos()
     {
-        Vector3 rayDir = transform.TransformDirection(_downDir);
-        RaycastHit hit;
-        bool didHit = Physics.Raycast(transform.position, rayDir, out hit, _maxRayDist, _rayMask);
+        if (!Application.isPlaying && _cachedTransform == null)
+            _cachedTransform = transform;
 
-        // Dibuja el raycast
-        Gizmos.color = didHit ? Color.blue : Color.red;
-        float drawDistance = didHit ? hit.distance : _maxRayDist;
-        Gizmos.DrawLine(transform.position, transform.position + rayDir * drawDistance);
+        Vector3 pos = _cachedTransform.position;
+        Vector3 worldDown = _cachedTransform.TransformDirection(_downDir);
 
-        // Dibuja la altura base deseada (_baseRideHeight)
+        // Raycast line
+        Gizmos.color = _rayDidHit ? Color.blue : Color.red;
+        float len = _rayDidHit ? _rayHit.distance : _maxRayDist;
+        Gizmos.DrawLine(pos, pos + worldDown * len);
+
+        // Altura base
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position + rayDir * _baseRideHeight, 0.1f);
+        Gizmos.DrawWireSphere(pos + worldDown * _baseRideHeight, GizmoBaseRadius);
 
-        // Dibuja la altura actual con el offset de "respiración"
+        // Altura con respiración
         Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(transform.position + rayDir * (_baseRideHeight + _currentBreathingOffset), 0.15f);
+        Gizmos.DrawWireSphere(
+            pos + worldDown * (_baseRideHeight + _currentBreathingOffset),
+            GizmoBreathRadius
+        );
 
-        // Dibuja el umbral de suelo
+        // Umbral de suelo
         Gizmos.color = Color.white;
-        Gizmos.DrawWireSphere(transform.position + rayDir * (_baseRideHeight + _isGroundThreshold), 0.05f);
+        Gizmos.DrawWireSphere(
+            pos + worldDown * (_baseRideHeight + _isGroundThreshold),
+            GizmoThresholdRad
+        );
     }
 }
+
 
 

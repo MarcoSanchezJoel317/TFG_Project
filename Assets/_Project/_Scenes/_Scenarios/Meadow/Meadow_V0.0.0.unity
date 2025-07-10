@@ -9348,6 +9348,10 @@ PrefabInstance:
       propertyPath: checkRadius
       value: 0.1
       objectReference: {fileID: 0}
+    - target: {fileID: 7070969280158634840, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9044385579774103808, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
       propertyPath: m_Volume
       value: 0.85

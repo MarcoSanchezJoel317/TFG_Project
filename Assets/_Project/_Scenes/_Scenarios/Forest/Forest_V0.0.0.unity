@@ -1729,6 +1729,67 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -8302102485596996044, guid: b6471cc964fc9fc40ae268ace745f140, type: 3}
+--- !u!1001 &407443601
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 769832638090882498, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1430296292382172304, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_Name
+      value: SheepFriendSleep_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3989585634692474776, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 55.6566
+      objectReference: {fileID: 0}
+    - target: {fileID: 3989585634692474776, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 11.019997
+      objectReference: {fileID: 0}
+    - target: {fileID: 3989585634692474776, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.4461384
+      objectReference: {fileID: 0}
+    - target: {fileID: 3989585634692474776, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3989585634692474776, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3989585634692474776, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3989585634692474776, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3989585634692474776, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3989585634692474776, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3989585634692474776, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
 --- !u!1 &420170479
 GameObject:
   m_ObjectHideFlags: 0
@@ -4541,6 +4602,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SheepFriendSleep
       objectReference: {fileID: 0}
+    - target: {fileID: 1430296292382172304, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3989585634692474776, guid: 9949f0de96851b24d9d18a7f77dda2ca, type: 3}
       propertyPath: m_LocalPosition.x
       value: 55.6566
@@ -6905,3 +6970,4 @@ SceneRoots:
   - {fileID: 240688279}
   - {fileID: 1242267216}
   - {fileID: 420170480}
+  - {fileID: 407443601}

@@ -1,3 +1,5 @@
+// TranslatableText.cs
+
 using UnityEngine;
 using TMPro;
 #if UNITY_EDITOR
@@ -5,16 +7,22 @@ using UnityEditor;
 using System.Linq;
 #endif
 
+/// <summary>
+/// Actualiza un TextMeshProUGUI usando el sistema de localización.
+/// Se suscribe a OnLanguageChanged para refrescar en tiempo real.
+/// </summary>
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class TranslatableText : MonoBehaviour
 {
-    [Tooltip("Clave de texto que quieres usar aquí")]
+    [Tooltip("Clave del texto que se mostrará aquí.")]
     public TextKey textKey;
 
-    [Header("Sólo para preview en Editor: arrastra aquí tu LanguageData en Inglés")]
+    [Header("Solo para preview en Editor")]
+    [Tooltip("LanguageData de ejemplo para ver el texto en Editor.")]
     public LanguageData previewLanguageData;
 
     private TextMeshProUGUI _uiText;
+    private TextKey _lastKey;
 
     private void Awake()
     {
@@ -30,7 +38,7 @@ public class TranslatableText : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"[{nameof(TranslatableText)}] LanguageManager no está listo todavía.");
+            Debug.LogWarning($"[{nameof(TranslatableText)}] LanguageManager no está listo.");
         }
     }
 
@@ -40,48 +48,44 @@ public class TranslatableText : MonoBehaviour
             LanguageManager.Instance.OnLanguageChanged -= UpdateText;
     }
 
+    /// <summary>
+    /// Crea el texto traducido según la clave actual.
+    /// </summary>
     private void UpdateText()
     {
         _uiText.text = LanguageManager.Instance.GetText(textKey);
     }
 
 #if UNITY_EDITOR
-    // Guarda la última clave para detectar cambios
-    private TextKey _lastKey;
-
+    /// <summary>
+    /// En Editor: renombra el GameObject y muestra preview en el Inspector.
+    /// </summary>
     private void OnValidate()
     {
-        // 1) Renombrar el GameObject si cambió la clave
+        // Renombrar objeto al cambiar la clave
         if (_lastKey != textKey)
         {
             _lastKey = textKey;
-            this.gameObject.name = textKey.ToString();
-            // Marca dirty para que Unity guarde la escena/prefab
+            gameObject.name = textKey.ToString();
             if (!Application.isPlaying)
                 EditorUtility.SetDirty(this);
         }
 
-        // 2) Si hay LanguageData de preview, actualiza el texto al valor en inglés
+        // Mostrar preview usando el LanguageData asignado
         if (previewLanguageData != null)
         {
-            // Busca la entrada en el array
-            var entry = previewLanguageData.texts
-                .FirstOrDefault(e => e.key == textKey);
-            string englishValue = entry.value;
-
-            // Asigna al TMP
-            if (_uiText == null)
-                _uiText = GetComponent<TextMeshProUGUI>();
-
-            if (_uiText != null && _uiText.text != englishValue)
+            var entry = previewLanguageData.texts.FirstOrDefault(e => e.key == textKey);
+            if (_uiText == null) _uiText = GetComponent<TextMeshProUGUI>();
+            if (_uiText != null && _uiText.text != entry.value)
             {
-                _uiText.text = englishValue;
+                _uiText.text = entry.value;
                 EditorUtility.SetDirty(_uiText);
             }
         }
     }
 #endif
 }
+
 
 
 

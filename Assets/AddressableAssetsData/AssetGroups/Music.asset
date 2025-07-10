@@ -19,13 +19,19 @@ MonoBehaviour:
     m_Address: Assets/_Project/_Art/Audio/_Testing/TestAudio2.ogg
     m_ReadOnly: 0
     m_SerializedLabels:
-    - MusicLevel1
+    - MusicMenuLevel0
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 711f2fd1a4c601f42ac47aa5a4475c74
-    m_Address: Assets/_Project/_Art/Audio/_Testing/TestingMusic.ogg
+  - m_GUID: 759a767cf720f60468fcd24ee10efae4
+    m_Address: Assets/_Project/_Art/Audio/_Testing/MusicForestLevel1.ogg
     m_ReadOnly: 0
     m_SerializedLabels:
-    - MusicLevel2
+    - MusicForestLevel1
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9f1758bda6370f646b81c21e3dca9ab2
+    m_Address: Assets/_Project/_Art/Audio/_Testing/SoundLevel2.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MusicBlizzardLevel2
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 907e292bd2cbf8a41ba6c109826b45b6, type: 2}

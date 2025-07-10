@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 3092e06e59bd5c74fbfdf4a3636bbe88
   m_currentHash:
     serializedVersion: 2
-    Hash: 9f9f96fbfd1f8b038176d97526b07ead
+    Hash: 42ed61196daa63ac1830b5fe54b4ca0a
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_CatalogRequestsTimeout: 0
@@ -99,8 +99,9 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
-    - MusicLevel2
-    - MusicLevel1
+    - MusicMenuLevel0
+    - MusicForestLevel1
+    - MusicBlizzardLevel2
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 70066b235778a1345b2d67e2e106a423, type: 2}

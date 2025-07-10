@@ -1,60 +1,86 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
+/// <summary>
+/// Gestiona las opciones de audio desde sliders en el menú:
+/// carga valores guardados, aplica cambios al AudioMixer y persiste en PlayerPrefs.
+/// </summary>
 public class OptionsAudioSettings : MonoBehaviour
 {
     [Header("Referencias UI")]
-    public Slider masterSlider;
-    public Slider musicSlider;
-    public Slider sfxSlider;
+    [Tooltip("Slider de volumen master (0…1).")]
+    [SerializeField] private Slider _masterSlider;
+    [Tooltip("Slider de volumen de música (0…1).")]
+    [SerializeField] private Slider _musicSlider;
+    [Tooltip("Slider de volumen de efectos (0…1).")]
+    [SerializeField] private Slider _sfxSlider;
 
     [Header("Audio Mixer")]
-    public AudioMixer audioMixer;
+    [Tooltip("AudioMixer con parámetros MasterVolume, MusicVolume, SFXVolume.")]
+    [SerializeField] private AudioMixer _audioMixer;
 
-    void Start()
+    private const string PREF_MASTER = "MasterVolume";
+    private const string PREF_MUSIC = "MusicVolume";
+    private const string PREF_SFX = "SFXVolume";
+
+    private void Awake()
     {
-        // Carga valores guardados o 0.75f por defecto
-        masterSlider.value = PlayerPrefs.GetFloat("MasterVolume", 0.75f);
-        musicSlider.value = PlayerPrefs.GetFloat("MusicVolume", 0.75f);
-        sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 0.75f);
-
-        // Aplica de entrada
-        ApplyMaster(masterSlider.value);
-        ApplyMusic(musicSlider.value);
-        ApplySfx(sfxSlider.value);
-
-        // Suscripci�n a cambios
-        masterSlider.onValueChanged.AddListener(ApplyMaster);
-        musicSlider.onValueChanged.AddListener(ApplyMusic);
-        sfxSlider.onValueChanged.AddListener(ApplySfx);
+        // Validaciones básicas
+        if (_masterSlider == null || _musicSlider == null || _sfxSlider == null || _audioMixer == null)
+        {
+            Debug.LogError("[OptionsAudioSettings] Faltan referencias en el Inspector.");
+            enabled = false;
+            return;
+        }
     }
 
-    void ApplyMaster(float v)
+    /// <summary>
+    /// Inicializa sliders con valores de PlayerPrefs y suscribe listeners.
+    /// </summary>
+    private void OnEnable()
     {
-        float dB;
-        if (v <= 0f)
-            dB = -80f;               // Nivel �silencio� en Unity suele considerarse -80 dB
-        else
-            dB = Mathf.Log10(v) * 20f;
+        // Carga valores guardados o default 0.75f
+        _masterSlider.value = PlayerPrefs.GetFloat(PREF_MASTER, 0.75f);
+        _musicSlider.value = PlayerPrefs.GetFloat(PREF_MUSIC, 0.75f);
+        _sfxSlider.value = PlayerPrefs.GetFloat(PREF_SFX, 0.75f);
 
-        audioMixer.SetFloat("MasterVolume", dB);
-        PlayerPrefs.SetFloat("MasterVolume", v);
+        // Aplica inmediatamente
+        ApplyVolume(PREF_MASTER, "MasterVolume", _masterSlider.value);
+        ApplyVolume(PREF_MUSIC, "MusicVolume", _musicSlider.value);
+        ApplyVolume(PREF_SFX, "SFXVolume", _sfxSlider.value);
+
+        // Listeners de UI
+        _masterSlider.onValueChanged.AddListener(v => ApplyVolume(PREF_MASTER, "MasterVolume", v));
+        _musicSlider.onValueChanged.AddListener(v => ApplyVolume(PREF_MUSIC, "MusicVolume", v));
+        _sfxSlider.onValueChanged.AddListener(v => ApplyVolume(PREF_SFX, "SFXVolume", v));
     }
 
-    void ApplyMusic(float v)
+    /// <summary>
+    /// Desuscribe los listeners al desactivarse el objeto.
+    /// </summary>
+    private void OnDisable()
     {
-        float dB = (v <= 0f) ? -80f : Mathf.Log10(v) * 20f;
-        audioMixer.SetFloat("MusicVolume", dB);
-        PlayerPrefs.SetFloat("MusicVolume", v);
+        _masterSlider.onValueChanged.RemoveAllListeners();
+        _musicSlider.onValueChanged.RemoveAllListeners();
+        _sfxSlider.onValueChanged.RemoveAllListeners();
     }
 
-    void ApplySfx(float v)
+    /// <summary>
+    /// Convierte un valor [0…1] a dB, lo aplica al AudioMixer y lo guarda en PlayerPrefs.
+    /// </summary>
+    /// <param name="prefKey">Clave en PlayerPrefs (p. ej. \"MusicVolume\").</param>
+    /// <param name="mixerParam">Nombre del parámetro en el AudioMixer.</param>
+    /// <param name="value">Valor de volumen 0…1.</param>
+    private void ApplyVolume(string prefKey, string mixerParam, float value)
     {
-        float dB = (v <= 0f) ? -80f : Mathf.Log10(v) * 20f;
-        audioMixer.SetFloat("SFXVolume", dB);
-        PlayerPrefs.SetFloat("SFXVolume", v);
-    }
+        // Conversión lineal a decibelios; Unity trata -80dB como silencio
+        float dB = (value <= 0f) ? -80f : Mathf.Log10(value) * 20f;
 
+        _audioMixer.SetFloat(mixerParam, dB);
+        PlayerPrefs.SetFloat(prefKey, value);
+        PlayerPrefs.Save();
+    }
 }
+
 

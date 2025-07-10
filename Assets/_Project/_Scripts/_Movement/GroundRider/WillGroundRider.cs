@@ -1,130 +1,142 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
+Ôªøusing UnityEngine;
+using System.Collections.Generic;
 
+/// <summary>
+/// Mantiene la esfera de Voluntad flotando sobre el terreno,
+/// usando un comportamiento de resorte amortiguado y respiraci√≥n senoidal.
+/// </summary>
+[RequireComponent(typeof(Rigidbody))]
 public class WillGroundRider : MonoBehaviour
 {
+    #region Inspector Settings
+
+    [Header("Detecci√≥n de Suelo")]
+    [Tooltip("Direcci√≥n local del raycast hacia abajo.")]
+    [SerializeField] private Vector3 _downDir = Vector3.down;
+    [Tooltip("Distancia m√°xima para el raycast.")]
+    [SerializeField] private float _maxRayDist = 100f;
+    [Tooltip("Capas detectadas como suelo.")]
+    [SerializeField] private LayerMask _rayMask;
+    [Tooltip("Margen extra para considerar que est√° en el suelo.")]
+    [SerializeField] private float _groundThreshold = 0.6f;
+
+    [Header("Par√°metros del Resorte")]
+    [Tooltip("Altura base deseada sobre el suelo.")]
+    [SerializeField] private float _baseHeight = 2.5f;
+    [Tooltip("Fuerza de resorte.")]
+    [SerializeField] private float _springStrength = 300f;
+    [Tooltip("Amortiguador del resorte.")]
+    [SerializeField] private float _springDamper = 15f;
+
+    [Header("Efecto de Respiraci√≥n")]
+    [Tooltip("Amplitud de la oscilaci√≥n vertical.")]
+    [SerializeField] private float _breathingAmplitude = 0.4f;
+    [Tooltip("Frecuencia de la oscilaci√≥n (ciclos/segundo).")]
+    [SerializeField] private float _breathingFrequency = 1f;
+
+    #endregion
+
     private Rigidbody _rb;
+    private Transform _t;
+    private bool _hit;
+    private RaycastHit _hitInfo;
+    private float _breathingOffset;
 
-    [Header("Raycast Setup")]
-    [SerializeField]
-    private Vector3 _downDir = new Vector3(0f, -1f, 0f);
-    [SerializeField]
-    private float _maxRayDist = 100f;
-    [SerializeField]
-    private LayerMask _rayMask;
-    [SerializeField]
-    private float _isGroundThreshold = 0.6f; // Usaremos esto para el IsGrounded()
-
-    private bool _rayDidHit;
-    private RaycastHit _rayHit;
-
-    [Header("Ride Setup")]
-    [SerializeField]
-    private float _baseRideHeight = 2.5f; // Altura base deseada (tu 2.5)
-    [SerializeField]
-    private float _rideSpringStrenght = 300f;
-    [SerializeField]
-    private float _rideSpringDamper = 15f;
-
-    [Header("Breathing/Floating Effect")]
-    [SerializeField]
-    private float _breathingAmplitude = 0.4f; // Magnitud de la oscilaciÛn (ej. 0.2 unidades hacia arriba/abajo)
-    [SerializeField]
-    private float _breathingFrequency = 1f; // Velocidad de la oscilaciÛn (ej. 1 ciclo por segundo)
-    private float _currentBreathingOffset; // Offset calculado por la funciÛn sin
-
-    Gamepad pad;
+    // Gizmo radii
+    private const float GizmoBaseRadius = 0.1f;
+    private const float GizmoBreathRadius = 0.15f;
+    private const float GizmoThreshold = 0.05f;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        _t = transform;
     }
-
 
     private void FixedUpdate()
     {
-        CalculateBreathingOffset(); // Calcula el offset de la "respiraciÛn"
-        Vector3 rayDir = transform.TransformDirection(_downDir);
-
-        _rayDidHit = Physics.Raycast(transform.position, rayDir, out _rayHit, _maxRayDist, _rayMask);
-
-        Balance();
+        CastGroundRay();
+        UpdateBreathingOffset();
+        ApplySpringForce();
     }
 
-    private void CalculateBreathingOffset()
+    /// <summary>
+    /// Lanza un raycast hacia abajo para medir la distancia al suelo.
+    /// </summary>
+    private void CastGroundRay()
     {
-        // Usa Time.time para un movimiento continuo y suave
-        // Mathf.Sin oscila entre -1 y 1
-        _currentBreathingOffset = Mathf.Sin(Time.time * _breathingFrequency) * _breathingAmplitude;
+        Vector3 worldDown = _t.TransformDirection(_downDir);
+        _hit = Physics.Raycast(
+            _t.position,
+            worldDown,
+            out _hitInfo,
+            _maxRayDist,
+            _rayMask
+        );
     }
 
-    private void Balance()
+    /// <summary>
+    /// Calcula un offset vertical senoidal para simular respiraci√≥n.
+    /// </summary>
+    private void UpdateBreathingOffset()
     {
-        if (_rayDidHit)
-        {
-            Vector3 vel = _rb.linearVelocity;
-            Vector3 rayDir = transform.TransformDirection(_downDir);
-
-            Vector3 otherVel = Vector3.zero;
-            Rigidbody hitBody = _rayHit.rigidbody;
-
-            if (hitBody != null)
-            {
-                otherVel = hitBody.linearVelocity;
-            }
-
-            float rayDirVel = Vector3.Dot(rayDir, vel);
-            float otherDirVel = Vector3.Dot(rayDir, otherVel);
-
-            float relVel = rayDirVel - otherDirVel;
-
-            // La altura objetivo ahora es la altura base m·s el offset de "respiraciÛn"
-            float targetRideHeight = _baseRideHeight + _currentBreathingOffset;
-
-            float x = _rayHit.distance - targetRideHeight;
-
-            float springForce = (x * _rideSpringStrenght) - (relVel * _rideSpringDamper);
-
-            _rb.AddForce(rayDir * springForce);
-
-            if (hitBody != null)
-            {
-                hitBody.AddForceAtPosition(rayDir * -springForce, _rayHit.point);
-            }
-        }
+        _breathingOffset = Mathf.Sin(Time.time * _breathingFrequency)
+                         * _breathingAmplitude;
     }
 
-    // MÈtodo p˙blico para que el movimiento pueda comprobar si se est· en el suelo
+    /// <summary>
+    /// Aplica un resorte amortiguado para mantener la altura deseada.
+    /// </summary>
+    private void ApplySpringForce()
+    {
+        if (!_hit) return;
+
+        Vector3 worldDown = _t.TransformDirection(_downDir);
+        var ownVel = _rb.linearVelocity;
+        var otherVel = _hitInfo.rigidbody?.linearVelocity ?? Vector3.zero;
+        float relVel = Vector3.Dot(worldDown, ownVel - otherVel);
+
+        float target = _baseHeight + _breathingOffset;
+        float error = _hitInfo.distance - target;
+
+        float force = error * _springStrength - relVel * _springDamper;
+        _rb.AddForce(worldDown * force);
+
+        if (_hitInfo.rigidbody != null)
+            _hitInfo.rigidbody.AddForceAtPosition(-worldDown * force, _hitInfo.point);
+    }
+
+    /// <summary>
+    /// Comprueba si la esfera est√° cerca del suelo.
+    /// </summary>
     public bool IsGrounded()
     {
-        // Esta en el suelo si ha dado con el rayo 
-        return _rayDidHit && _rayHit.distance <= _baseRideHeight + _isGroundThreshold;
+        return _hit && _hitInfo.distance <= _baseHeight + _groundThreshold;
     }
 
-
-    
-    // Dibuja los Gizmos en el Editor y en Play Mode (cuando el GameObject est· seleccionado)
     private void OnDrawGizmos()
     {
-        Vector3 rayDir = transform.TransformDirection(_downDir);
-        RaycastHit hit;
-        bool didHit = Physics.Raycast(transform.position, rayDir, out hit, _maxRayDist, _rayMask);
+        if (_t == null) _t = transform;
 
-        // Dibuja el raycast
+        Vector3 down = _t.TransformDirection(_downDir);
+        Vector3 pos = _t.position;
+        bool didHit = Physics.Raycast(pos, down, out RaycastHit info, _maxRayDist, _rayMask);
+
+        // Raycast line
         Gizmos.color = didHit ? Color.blue : Color.red;
-        float drawDistance = didHit ? hit.distance : _maxRayDist;
-        Gizmos.DrawLine(transform.position, transform.position + rayDir * drawDistance);
+        Gizmos.DrawLine(pos, pos + down * (didHit ? info.distance : _maxRayDist));
 
-        // Dibuja la altura base deseada (_baseRideHeight)
+        // Base height
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position + rayDir * _baseRideHeight, 0.1f);
+        Gizmos.DrawWireSphere(pos + down * _baseHeight, GizmoBaseRadius);
 
-        // Dibuja la altura actual con el offset de "respiraciÛn"
+        // Breathing height
         Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(transform.position + rayDir * (_baseRideHeight + _currentBreathingOffset), 0.15f);
+        Gizmos.DrawWireSphere(pos + down * (_baseHeight + _breathingOffset), GizmoBreathRadius);
 
-        // Dibuja el umbral de suelo
+        // Ground threshold
         Gizmos.color = Color.white;
-        Gizmos.DrawWireSphere(transform.position + rayDir * (_baseRideHeight + _isGroundThreshold), 0.05f);
+        Gizmos.DrawWireSphere(pos + down * (_baseHeight + _groundThreshold), GizmoThreshold);
     }
 }
+

@@ -1,10 +1,5 @@
 /*
-    Cursor.cs
-    Autor: Álvaro R. Acosta
-    Trabajo de Fin de Grado (TFG)
-    ---------------------------------------------------------------------------
-    Controla un cursor UI personalizado en Unity usando el nuevo Input System.
-    --------------------------------------------------------------------------------
+    
     Características principales:
     1. Movimiento por ratón y gamepad, con detección automática de modo.
     2. Clamping para mantener el cursor dentro de la pantalla.

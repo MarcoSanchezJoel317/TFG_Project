@@ -25,7 +25,7 @@ public class PlayerControllerTest : MonoBehaviour
         lastPosition = transform.position;
         rb = GetComponent<Rigidbody>();
         
-        //animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
         saveSpeed = moveSpeed;
     }
 
