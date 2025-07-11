@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 /// <summary>
-/// Usa fuerzas físicas para posicionar un objeto a un radio fijo alrededor del centro de un receptor,
-/// moviéndose hacia la dirección de input 2D que el receptor provee (plano XZ).
-/// Además ajusta la intensidad de emisión del material según la energía restante.
+/// Mueve un cuerpo rígido según input y ajusta la intensidad de emisión
+/// pasándosela directamente a la propiedad float de tu shader (2–10).
 /// </summary>
 public interface IInputProvider
 {
@@ -13,10 +13,7 @@ public interface IInputProvider
 
 public interface IEnergyRemain
 {
-    /// <summary>
-    /// Energía normalizada en [0,1].
-    /// </summary>
-    float RemainEnergy();
+    float RemainEnergy();  // [0,1]
 }
 
 [RequireComponent(typeof(Rigidbody))]
@@ -24,71 +21,77 @@ public interface IEnergyRemain
 public class WillMovement : MonoBehaviour
 {
     [Header("Receptor e Input")]
-    [SerializeField, Tooltip("Transform del receptor alrededor del cual posicionarse.")]
-    private Transform receptor;
+    [SerializeField] private Transform receptor;
+    [SerializeField] private MonoBehaviour inputProviderComponent;
+    [SerializeField] private MonoBehaviour energyProviderComponent;
 
-    [SerializeField, Tooltip("Componente del receptor que implementa IInputProvider.")]
-    private MonoBehaviour inputProviderComponent;
-
-    [SerializeField, Tooltip("Componente del receptor que implementa IEnergyRemain.")]
-    private MonoBehaviour energyProviderComponent;
-
-    [Header("Emisión")]
-    [SerializeField, Tooltip("Color base de la emisión.")]
-    private Color emissionColor = new Color32(191, 11, 0, 255);
-
-    // Intensidad mínima y máxima
-    private const float MinIntensity = 3f;
-    private const float MaxIntensity = 6f;
+    [Header("Emisión (Shader Graph)")]
+    [SerializeField] private float MinIntensity = 2f;
+    [SerializeField] private float MaxIntensity = 10f;
 
     private IInputProvider _inputProvider;
     private IEnergyRemain _energyRemain;
     private Rigidbody _rb;
     private Material _matInstance;
 
-    private void Awake()
+    private void Start()
     {
         _rb = GetComponent<Rigidbody>();
 
-        // Validaciones receptor / interfaces
         if (receptor == null ||
             !(inputProviderComponent is IInputProvider) ||
             !(energyProviderComponent is IEnergyRemain))
         {
-            Debug.LogError($"[WillMovement] Configuración incorrecta en {name}.");
+            Debug.LogError($"[WillMovement] Configuración incorrecta en {name}");
             enabled = false;
             return;
         }
 
-        _inputProvider = inputProviderComponent as IInputProvider;
-        _energyRemain = energyProviderComponent as IEnergyRemain;
+        _inputProvider = (IInputProvider)inputProviderComponent;
+        _energyRemain = (IEnergyRemain)energyProviderComponent;
 
-        // Instanciamos el material para no modificar el shared de otros objetos
-        var renderer = GetComponent<MeshRenderer>();
-        _matInstance = renderer.material;
-        // Aseguramos que la keyword de emisión está activa
+        var rend = GetComponent<MeshRenderer>();
+        _matInstance = rend.material;
         _matInstance.EnableKeyword("_EMISSION");
+
+        // Debug inicial
+        Debug.Log($"[WillMovement] Material instanciado: {_matInstance.name}");
+        float initialValue = _matInstance.GetFloat("_EmissionIntensity");
+        Debug.Log($"[WillMovement] Valor inicial _EmissionIntensity = {initialValue:F3}");
     }
 
     private void FixedUpdate()
     {
-        // 1) Movimiento
+        // Movimiento
         if (_inputProvider.GetInput())
         {
-            Vector3 dir = _inputProvider.GetInputDirection();
-            Vector3 targetPos = new Vector3(dir.x, transform.position.y, dir.z);
-            _rb.MovePosition(targetPos);
+            var dir = _inputProvider.GetInputDirection();
+            var target = new Vector3(dir.x, transform.position.y, dir.z);
+            _rb.MovePosition(target);
         }
 
-        // 2) Ajuste de emisión según energía
+        // Actualización de emisión
+        UpdateEmission();
+    }
+
+    /// <summary>
+    /// Calcula y aplica la intensidad de emisión según la energía restante,
+    /// y emite logs para debug.
+    /// </summary>
+    private void UpdateEmission()
+    {
         float energyNorm = Mathf.Clamp01(_energyRemain.RemainEnergy());
-        print($"Energia restante: {energyNorm}");
         float intensity = Mathf.Lerp(MinIntensity, MaxIntensity, energyNorm);
-        print($"Intensidad: {intensity}");
-        // Multiplicamos el color base por la intensidad
-        _matInstance.SetColor("_EmissionColor", emissionColor * intensity);
+
+        _matInstance.SetFloat("_EmissionIntensity", intensity);
+
+        float shaderValue = _matInstance.GetFloat("_EmissionIntensity");
+        Debug.Log($"[WillMovement] EnergiaNorm={energyNorm:F3} | IntensityCalc={intensity:F3} | Shader['_EmissionIntensity']={shaderValue:F3}");
     }
 }
+
+
+
 
 
 

@@ -1243,7 +1243,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 36692291301927800, guid: 2b286fcd4b2f34249bcd629d9140873d, type: 3}
       propertyPath: _baseRideHeight
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 36692291301927800, guid: 2b286fcd4b2f34249bcd629d9140873d, type: 3}
       propertyPath: _rayMask.m_Bits
@@ -1251,7 +1251,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 36692291301927800, guid: 2b286fcd4b2f34249bcd629d9140873d, type: 3}
       propertyPath: _rideSpringStrength
-      value: 250
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 1721501872424379318, guid: 2b286fcd4b2f34249bcd629d9140873d, type: 3}
       propertyPath: m_Name
@@ -11984,6 +11984,10 @@ PrefabInstance:
     - target: {fileID: 1886702687807014, guid: 6c923e622fdfafa42b06425421702e07, type: 3}
       propertyPath: m_Name
       value: SummoningStoneDetailed
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886702687807014, guid: 6c923e622fdfafa42b06425421702e07, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1886702687807014, guid: 6c923e622fdfafa42b06425421702e07, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -30815,6 +30819,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: d05224262c56aa54cb9f4b396c0af09b, type: 3}
       propertyPath: m_Layer
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d05224262c56aa54cb9f4b396c0af09b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d05224262c56aa54cb9f4b396c0af09b, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -55547,6 +55555,10 @@ PrefabInstance:
       propertyPath: inputProviderComponent
       value: 
       objectReference: {fileID: 70067943}
+    - target: {fileID: 766658508117860432, guid: 5e93e9fe9f9aca849af8bd91eebd2967, type: 3}
+      propertyPath: energyProviderComponent
+      value: 
+      objectReference: {fileID: 70067943}
     - target: {fileID: 1563171898167480468, guid: 5e93e9fe9f9aca849af8bd91eebd2967, type: 3}
       propertyPath: m_LocalPosition.x
       value: 867.8
@@ -55595,6 +55607,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: The Will
       objectReference: {fileID: 0}
+    - target: {fileID: 6513602979648417102, guid: 5e93e9fe9f9aca849af8bd91eebd2967, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 6373bdfc09b8b3548a6ae7cb8b07f42d, type: 2}
     - target: {fileID: 7487211872185035118, guid: 5e93e9fe9f9aca849af8bd91eebd2967, type: 3}
       propertyPath: _rayMask.m_Bits
       value: 264
