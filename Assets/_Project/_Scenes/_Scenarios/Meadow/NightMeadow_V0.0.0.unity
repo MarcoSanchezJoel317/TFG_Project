@@ -8,8 +8,8 @@ OcclusionCullingSettings:
     smallestOccluder: 5
     smallestHole: 0.25
     backfaceThreshold: 100
-  m_SceneGUID: 00000000000000000000000000000000
-  m_OcclusionCullingData: {fileID: 0}
+  m_SceneGUID: 2b3668d0c3c643e429ca349bef1189d0
+  m_OcclusionCullingData: {fileID: 36300000, guid: ddbc19e5fa878fe409a68445b1f55cba, type: 2}
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
@@ -7715,7 +7715,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 897412331}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.13096416, y: 0.008341388, z: -0.0011019531, w: 0.9913514}
+  m_LocalRotation: {x: 0.13096337, y: 0.008526173, z: -0.0011263594, w: 0.99134994}
   m_LocalPosition: {x: 1459.25, y: 28.225647, z: 911.44025}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -8692,7 +8692,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d05224262c56aa54cb9f4b396c0af09b, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -11921,12 +11921,24 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: d1450db5514262f468bc65c318a30e26, type: 3}
     - target: {fileID: 6340726172319060646, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
+      propertyPath: rayLength
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340726172319060646, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
+      propertyPath: repelForce
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340726172319060646, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
       propertyPath: audioSource
       value: 
       objectReference: {fileID: 1296266684}
     - target: {fileID: 6340726172319060646, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
       propertyPath: checkRadius
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340726172319060646, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
+      propertyPath: noWalkableMask.m_Bits
+      value: 512
       objectReference: {fileID: 0}
     - target: {fileID: 9044385579774103808, guid: f8f10d0ce1993514085bea1af11009d9, type: 3}
       propertyPath: m_Volume
@@ -12870,7 +12882,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1355735766}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.13096416, y: 0.008341388, z: -0.0011019531, w: 0.9913514}
+  m_LocalRotation: {x: 0.13096339, y: 0.008526174, z: -0.0011263596, w: 0.99134994}
   m_LocalPosition: {x: 1459.25, y: 28.225647, z: 911.44025}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

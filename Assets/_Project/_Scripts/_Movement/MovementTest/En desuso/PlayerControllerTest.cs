@@ -12,7 +12,7 @@ public class PlayerControllerTest : MonoBehaviour
     private Rigidbody rb;
     private Vector3 inputDirection;
 
-    [Header("Control L�mites")]
+    [Header("Control Limites")]
     private Vector3 lastPosition;
     public LayerMask noWalkableMask;
     public float rayLength = 0.5f;

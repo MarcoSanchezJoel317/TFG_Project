@@ -21,6 +21,10 @@ public class SceneManagerScript : MonoBehaviour
         {
             LoadSceneIfNotLoaded("_Project/_Scenes/_Scenarios/Forest/Forest_V0.0.0");
         }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            QuitGame();
+        }
     }
 
     void LoadSceneIfNotLoaded(string sceneName)
@@ -29,5 +33,15 @@ public class SceneManagerScript : MonoBehaviour
         {
             SceneManager.LoadScene(sceneName);
         }
+    }
+    void QuitGame()
+    {
+        // Funciona en compilaciones
+        Application.Quit();
+
+        // Solo para modo editor (debug)
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 }
