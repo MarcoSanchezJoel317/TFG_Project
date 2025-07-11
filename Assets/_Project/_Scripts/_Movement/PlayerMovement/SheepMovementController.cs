@@ -4,7 +4,7 @@ using TMPro;  // Necesario si usas TextMeshPro para la UI
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Animator))]
-public class SheepMovementController : MonoBehaviour, IInputProvider
+public class SheepMovementController : MonoBehaviour, IInputProvider, IEnergyRemain
 {
     [Header("Input 🎮")]
     [Tooltip("Acción de movimiento (Vector2) desde el Input System)")]
@@ -493,6 +493,12 @@ public class SheepMovementController : MonoBehaviour, IInputProvider
     public void ReloadEnergy()
     {
         _energy = _maxEnergy;
+    }
+
+    public float RemainEnergy()
+    {
+        float remain = _energy/_maxEnergy;
+        return remain;
     }
 
     /// <summary>
