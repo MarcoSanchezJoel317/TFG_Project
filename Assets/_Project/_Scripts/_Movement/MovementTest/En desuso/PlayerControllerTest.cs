@@ -54,7 +54,7 @@ public class PlayerControllerTest : MonoBehaviour
             animator.SetBool("Wait", false);
             animator.SetBool("Walk", true);
 
-            if (run)
+            if (run && v > 0)
             {
                 animator.SetBool("Run", true);
                 moveSpeed = saveSpeed*3;
@@ -72,6 +72,7 @@ public class PlayerControllerTest : MonoBehaviour
         {
             animator.SetBool("Wait", true);
             animator.SetBool("Walk", false);
+            animator.SetBool("Run", false);
         }
 
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
