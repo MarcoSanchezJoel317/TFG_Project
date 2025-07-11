@@ -16,7 +16,7 @@ public class CustomizeCursor : MonoBehaviour
     private void OnEnable()
     {
         UpdateCursor(SettingsManager.Instance.KnowYourLevel());
-        SettingsManager.OnLevelChanged += UpdateCursor;
+        //SettingsManager.OnLevelChanged += UpdateCursor;
     }
 
     /// <summary>
@@ -24,7 +24,7 @@ public class CustomizeCursor : MonoBehaviour
     /// </summary>
     private void OnDisable()
     {
-        SettingsManager.OnLevelChanged -= UpdateCursor;
+        //SettingsManager.OnLevelChanged -= UpdateCursor;
     }
 
     /// <summary>

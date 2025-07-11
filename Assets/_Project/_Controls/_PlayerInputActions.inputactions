@@ -862,6 +862,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ChangeScene",
+                    "type": "Button",
+                    "id": "4a9112f9-97c8-431e-a8d1-c7d8cf5c594a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Hold",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -983,6 +992,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "ScrollWheel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "686d9d64-8c1e-4cac-8b22-a7880b565662",
+                    "path": "<Gamepad>/select",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeScene",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3bb869ad-f7ea-4cdd-99e8-0c3621ee8c56",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeScene",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Gestiona la carga de escenas según su índice en Build Settings,
@@ -12,9 +13,12 @@ public class SceneLoader : MonoBehaviour
 {
     // Array interno con todos los nombres de escena según Build Settings
     [SerializeField] private string[] _sceneNames;
+    [SerializeField] private string _loadingSceneName = "WAIT";
+
 
     private void Awake()
     {
+        
         // Obtener cuántas escenas hay en Build Settings
         int buildCount = SceneManager.sceneCountInBuildSettings;
         _sceneNames = new string[buildCount];
@@ -44,7 +48,7 @@ public class SceneLoader : MonoBehaviour
         SettingsManager.Instance.SetYourLevel(sceneIndex);
 
         // Cargamos la escena por nombre
-        SceneManager.LoadScene(_sceneNames[sceneIndex]);
+        SceneManager.LoadScene(_loadingSceneName);
     }
 
     /// <summary>

@@ -25,12 +25,12 @@ public class WillMovement : MonoBehaviour
     [SerializeField, Tooltip("Componente del receptor que implementa IInputProvider.")]
     private MonoBehaviour inputProviderComponent;
 
-    [Header("Configuración de Órbita")]
-    [SerializeField, Tooltip("Radio deseado en metros desde el centro del receptor.")]
-    private float radius = 3f;
+    //[Header("Configuración de Órbita")]
+    //[SerializeField, Tooltip("Radio deseado en metros desde el centro del receptor.")]
+    //private float radius = 3f;
 
-    [SerializeField, Tooltip("Fuerza de spring para corregir la posición radial (solo eje XZ).")]
-    private float followStrength = 50f;
+    //[SerializeField, Tooltip("Fuerza de spring para corregir la posición radial (solo eje XZ).")]
+    //private float followStrength = 50f;
 
     private IInputProvider _inputProvider;
     private Rigidbody _rb;

@@ -9,8 +9,14 @@ EditorBuildSettings:
     path: Assets/_Project/_Scenes/_Menu/Menu.unity
     guid: b09655e27926929449f046becfd04902
   - enabled: 1
-    path: Assets/_Project/_Scenes/_Testing/TheNewDebugRoom.unity
-    guid: 6be413d59e8ddcf42a48b5bd3aa54bc1
+    path: Assets/_Project/_Scenes/_Scenarios/Meadow/MeadowLevel1.unity
+    guid: 225015a93953406428da3503b24c139b
+  - enabled: 1
+    path: Assets/_Project/_Scenes/_Scenarios/Forest/LevelTwoForest.unity
+    guid: 6f592d353a2c5cb44bb1dd977c2be81f
+  - enabled: 1
+    path: Assets/_Project/_Scenes/WAIT.unity
+    guid: fe7e3276667146b40a77e11fcb65555f
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: db64eb4e0d7c9cf45be4ca783bafbd3a, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2aa6e63a0dc10df40b4007a0541ed2c7, type: 3}
