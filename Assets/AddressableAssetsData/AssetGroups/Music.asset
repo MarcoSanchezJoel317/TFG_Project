@@ -33,6 +33,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - MusicBlizzardLevel2
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc35b8129666a234b8754ec3821a9516
+    m_Address: Assets/_Project/_Art/Audio/_Testing/MusicMenuLevel0.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MusicMenuLevel0
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 907e292bd2cbf8a41ba6c109826b45b6, type: 2}
   m_SchemaSet:

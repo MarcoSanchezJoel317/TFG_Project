@@ -56,6 +56,8 @@ public class CustomizeMusic : MonoBehaviour
             0 => _addressMenuLevel0,
             1 => _addressForestLevel1,
             2 => _addressBlizzardLevel2,
+            3 => _addressMenuLevel0,
+            4 => _addressMenuLevel0,
             _ => _addressMenuLevel0 // fallback al menú
         };
 
