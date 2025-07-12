@@ -16776,6 +16776,10 @@ PrefabInstance:
       propertyPath: inputProviderComponent
       value: 
       objectReference: {fileID: 1955530505}
+    - target: {fileID: 766658508117860432, guid: 5e93e9fe9f9aca849af8bd91eebd2967, type: 3}
+      propertyPath: energyProviderComponent
+      value: 
+      objectReference: {fileID: 1955530505}
     - target: {fileID: 1563171898167480468, guid: 5e93e9fe9f9aca849af8bd91eebd2967, type: 3}
       propertyPath: m_LocalPosition.x
       value: 118.8
